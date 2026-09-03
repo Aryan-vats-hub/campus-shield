@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Vault - Security & Maintenance Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  {% if not authenticated %}
+  <!-- SECURITY LOCK SCREEN -->
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md p-8 rounded-3xl shadow-2xl text-center">
+      <div class="w-14 h-14 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-indigo-500/20">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h2 class="text-xl font-bold text-white tracking-tight">Security Clearance Required</h2>
+      <p class="text-xs text-slate-400 mt-1 mb-6">Restricted portal for Wardens, Proctorial Board & Supervisors.</p>
+
+      {% if error %}
+      <div class="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs py-2 px-3 rounded-xl mb-4 font-semibold">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/admin" class="space-y-4">
+        <div>
+          <input type="password" name="secret_key" required placeholder="Enter Master Security Key" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-center text-white tracking-widest outline-none focus:border-indigo-500 mono transition">
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-indigo-600/30">
+          Unlock Control Center
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- UNLOCKED SECURE DASHBOARD -->
+  <div class="p-6 max-w-7xl mx-auto">
+    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h1 class="text-xl font-extrabold text-white">Central Dispatch & Safety Console</h1>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Live Feed: Infrastructure Faults, Anti-Ragging Reports, and ICC Grievances</p>
+      </div>
+      <a href="/admin/logout" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-xs font-bold transition">
+        Lock & Sign Out
+      </a>
+    </div>
+
+    <!-- DATA TABLE -->
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-xl">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900/70 border-b border-slate-700 text-slate-400 font-bold uppercase tracking-wider">
+            <tr>
+              <th class="p-3.5">Token ID</th>
+              <th class="p-3.5">Category</th>
+              <th class="p-3.5">Student</th>
+              <th class="p-3.5">Spot / Location</th>
+              <th class="p-3.5">Description</th>
+              <th class="p-3.5">Evidence</th>
+              <th class="p-3.5">Status Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-700/50">
+            {% for row in complaints %}
+            <tr class="hover:bg-slate-750/50 transition">
+              <td class="p-3.5 mono font-bold text-indigo-400">{{ row[1] }}</td>
+              <td class="p-3.5">
+                {% if row[2] == 'Girls Safety' %}
+                  <span class="bg-rose-500/15 text-rose-300 px-2 py-0.5 rounded-md font-bold text-[11px] border border-rose-500/30">Girls Safety</span>
+                {% elif row[2] == 'Anti-Ragging' %}
+                  <span class="bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-md font-bold text-[11px] border border-amber-500/30">Anti-Ragging</span>
+                {% else %}
+                  <span class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md text-[11px]">{{ row[2] }}</span>
+                {% endif %}
+              </td>
+              <td class="p-3.5 font-medium">{{ row[3] }}</td>
+              <td class="p-3.5 text-slate-300">{{ row[4] }}</td>
+              <td class="p-3.5 text-slate-400 max-w-xs truncate">{{ row[5] }}</td>
+              <td class="p-3.5 mono text-[11px] text-indigo-300">{{ row[6] }}</td>
+              <td class="p-3.5">
+                <form action="/api/update-status" method="POST" class="flex gap-1.5 items-center">
+                  <input type="hidden" name="token_id" value="{{ row[1] }}">
+                  <select name="status" class="bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-[11px] text-slate-200 outline-none">
+                    <option value="Under Review by Department" {% if row[7] == 'Under Review by Department' %}selected{% endif %}>Reviewing</option>
+                    <option value="Squad Dispatched" {% if row[7] == 'Squad Dispatched' %}selected{% endif %}>Squad Sent</option>
+                    <option value="Resolved & Closed" {% if row[7] == 'Resolved & Closed' %}selected{% endif %}>Resolved</option>
+                  </select>
+                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1.5 rounded-lg text-[10px] font-bold">Update</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</body>
+</html>

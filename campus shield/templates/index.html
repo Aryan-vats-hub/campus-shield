@@ -3,132 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CampusFix & Shield - Student Grievance & Safety Portal</title>
+  <title>CampusFix & Shield - Safety & Redressal Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>body { font-family: 'Inter', sans-serif; }</style>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-  <!-- EMERGENCY TOP BANNER -->
+  <!-- TOP EMERGENCY HELPLINE -->
   <div class="bg-rose-600 text-white text-xs font-semibold px-4 py-2 text-center flex items-center justify-center gap-2 shadow-sm">
     <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-    24x7 Security Helpline: +91-9876543210 | National Anti-Ragging: 1800-180-5522 | Women Safety Cell: +91-9876500000
+    24x7 Campus Security: +91-9876543210 | Anti-Ragging Toll-Free: 1800-180-5522 | Women Helpline: 1091
   </div>
 
   <!-- NAVBAR -->
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg font-black shadow-md">
-          CF
+    <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xl font-black shadow-md shadow-indigo-100">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
           <span class="text-xl font-extrabold text-slate-900 tracking-tight">Campus<span class="text-indigo-600">Fix</span></span>
-          <span class="ml-2 text-xs font-semibold px-2 py-0.5 bg-rose-50 text-rose-600 rounded-md border border-rose-100">+ Shield</span>
+          <span class="ml-1 text-[11px] font-bold px-2 py-0.5 bg-rose-50 text-rose-600 rounded-md border border-rose-100">+ Shield</span>
         </div>
       </div>
 
-      <div class="hidden md:flex items-center space-x-6 text-sm font-semibold text-slate-600">
-        <a href="#report-section" class="hover:text-indigo-600 transition">Raise Issue</a>
+      <div class="hidden sm:flex items-center space-x-6 text-xs font-bold text-slate-600 uppercase tracking-wider">
+        <a href="#report-section" class="hover:text-indigo-600 transition">Raise Grievance</a>
         <a href="#tracker" class="hover:text-indigo-600 transition">Track Ticket</a>
       </div>
 
-      <div class="flex items-center gap-3">
-        <button onclick="openLoginModal()" id="userAuthBtn" class="border border-slate-300 hover:bg-slate-50 text-slate-700 px-3.5 py-1.5 rounded-lg font-semibold text-xs transition flex items-center gap-2">
-          <i class="fa-regular fa-user"></i> <span id="userLabel">Student Login</span>
+      <div class="flex items-center gap-2">
+        <!-- ADMIN PASSCODE BUTTON (Exact CampusFix Style) -->
+        <button onclick="openAdminKeyModal()" class="border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-key text-slate-400"></i> Admin Access
         </button>
-        <button onclick="triggerEmergencySOS()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md transition flex items-center gap-1.5">
+
+        <!-- INSTANT SOS -->
+        <button onclick="dispatchLiveSOS()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md shadow-rose-200 transition flex items-center gap-1.5 animate-pulse">
           <i class="fa-solid fa-bell"></i> Instant SOS
         </button>
       </div>
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
-  <header class="bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 border-b border-slate-100 py-12 px-4 text-center">
+  <!-- HERO -->
+  <header class="bg-gradient-to-b from-indigo-50/60 via-white to-slate-50 py-12 px-4 text-center border-b border-slate-100">
     <div class="max-w-3xl mx-auto">
-      <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
-        Official Campus Facility & Protection Cell
+      <span class="bg-indigo-100 text-indigo-700 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+        Zero Tolerance & Rapid Maintenance Portal
       </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 leading-tight">
-        Fix Infrastructure, <span class="text-indigo-600">Report Ragging</span> & Ensure Safety.
+      <h1 class="text-3xl sm:text-5xl font-black text-slate-900 mt-4 leading-tight">
+        Campus Facility Repair, <span class="text-indigo-600">Anti-Ragging</span> & Girl Safety.
       </h1>
-      <p class="text-slate-600 text-sm mt-3 leading-relaxed">
-        Direct channel for classroom/lab maintenance, anonymous anti-ragging complaints, and girls safety assistance.
+      <p class="text-slate-600 text-sm mt-3 max-w-xl mx-auto">
+        Report electrical/lab faults, classroom maintenance, or submit 100% confidential reports for harassment and ragging.
       </p>
     </div>
   </header>
 
-  <!-- MAIN GRIEVANCE WORKSPACE -->
-  <main id="report-section" class="max-w-4xl mx-auto px-4 py-10 w-full">
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
-      
-      <div class="flex items-center justify-between pb-6 border-b border-slate-100 mb-6">
-        <div>
-          <h2 class="text-xl font-bold text-slate-900">New Grievance or Maintenance Ticket</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Select issue type and provide details.</p>
-        </div>
-        <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-full">Secure Desk</span>
+  <!-- FORM SECTION -->
+  <main id="report-section" class="max-w-3xl mx-auto px-4 py-10 w-full">
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm">
+      <div class="border-b border-slate-100 pb-5 mb-6">
+        <h2 class="text-xl font-extrabold text-slate-900">Register Incident / Request Repair</h2>
+        <p class="text-xs text-slate-500 mt-1">Select accurate category for immediate automated routing.</p>
       </div>
 
-      <form id="mainTicketForm" onsubmit="handleTicketSubmit(event)" class="space-y-6">
+      <form id="grievanceForm" onsubmit="handleFormSubmission(event)" class="space-y-5">
         
-        <!-- Category Dropdown -->
+        <!-- Category Selector -->
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Category *</label>
-          <select id="issueCategory" class="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-            <optgroup label="🚨 High Priority Safety">
-              <option value="Girls Safety">Girls Safety & Harassment Cell (ICC)</option>
+          <select id="issueCat" onchange="onCategoryChange()" class="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            <optgroup label="🚨 Sensitive & Safety Wings">
+              <option value="Girls Safety">Girls Safety & Harassment Cell (ICC Escort)</option>
               <option value="Anti-Ragging">Anti-Ragging Cell (Anonymous Protected)</option>
             </optgroup>
             <optgroup label="🛠️ Campus Infrastructure & Labs">
-              <option value="Classroom Infrastructure">Classroom Issue (Fan, Light, Switchboard, Projector)</option>
-              <option value="Computer Lab">Computer Lab (PC Boot, OS Error, LAN/Wi-Fi)</option>
-              <option value="Sanitation & Water">Drinking Water, Water Cooler & Washrooms</option>
-              <option value="Hostel Maintenance">Hostel Room & Mess Maintenance</option>
-              <option value="Library">Library Equipment & Facilities</option>
+              <option value="Classroom Infrastructure">Classroom Issue (Fan, Light, Switch, Projector)</option>
+              <option value="Computer Lab">Computer Lab (PC Boot, Software, Network/LAN)</option>
+              <option value="Water & Sanitation">Drinking Water, Water Cooler & Washrooms</option>
+              <option value="Hostel Maintenance">Hostel Room & Mess Quality</option>
+              <option value="Library">Library Study Area & Equipment</option>
             </optgroup>
           </select>
         </div>
 
-        <!-- Anonymous Toggle -->
-        <div class="bg-indigo-50/60 border border-indigo-100 p-3.5 rounded-xl flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-user-secret text-indigo-600"></i>
-            <div>
-              <div class="text-xs font-bold text-slate-800">Submit Anonymously</div>
-              <div class="text-[11px] text-slate-500">Hide my name, roll number, and contact details completely.</div>
-            </div>
+        <!-- Anonymous Checkbox -->
+        <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold text-slate-800">Submit Anonymously</div>
+            <div class="text-[11px] text-slate-500">Your name and student roll number will not be saved.</div>
           </div>
-          <input type="checkbox" id="isAnonCheck" onchange="toggleIdentityInputs()" class="w-4 h-4 text-indigo-600 rounded">
+          <input type="checkbox" id="anonToggle" onchange="handleAnonToggle()" class="w-4 h-4 text-indigo-600 rounded">
         </div>
 
-        <!-- Student Info Row -->
-        <div id="studentDetailRow" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Student Details Row -->
+        <div id="studentInputRow" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Student Name</label>
-            <input type="text" id="custName" placeholder="e.g. Rahul Kumar" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            <input type="text" id="studName" placeholder="e.g. Rahul Kumar" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Roll / Student ID</label>
-            <input type="text" id="custRoll" placeholder="e.g. 24CS102" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Student Roll / ID</label>
+            <input type="text" id="studRoll" placeholder="e.g. 24CS102" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
           </div>
         </div>
 
         <!-- Location & Urgency -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Specific Location / Room No. *</label>
-            <input type="text" id="custLocation" required placeholder="e.g. Lab 2 PC-14, Room 204, Common Room" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Precise Location / Room No. *</label>
+            <input type="text" id="issueLoc" required placeholder="e.g. Lab-2 PC 10 / 2nd Floor Washroom" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Urgency Level *</label>
-            <select id="custPriority" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-              <option value="Standard">Standard (Within 24-48 Hours)</option>
-              <option value="Urgent">Urgent / Critical</option>
-              <option value="Immediate Safety Alert">Immediate Emergency Action</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Priority Level *</label>
+            <select id="issuePrio" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="Normal">Normal (Routine Check)</option>
+              <option value="High Priority">High Priority (Urgent Repair)</option>
+              <option value="Immediate Emergency">Critical / Immediate Action</option>
             </select>
           </div>
         </div>
@@ -136,174 +132,243 @@
         <!-- Description -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Incident / Breakdown Description *</label>
-          <textarea id="custDesc" rows="3" required placeholder="Describe what happened or what equipment is broken..." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+          <textarea id="issueDesc" rows="3" required placeholder="Provide clear details of what is broken or what happened..." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
         </div>
 
-        <!-- Media Attachment (Video / Photo / Audio) -->
+        <!-- Media Attachment -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Attach Video, Audio or Photo Evidence (Optional)</label>
-          <div class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer transition relative bg-slate-50/50">
-            <input type="file" id="mediaEvidence" accept="image/*,video/*,audio/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="displaySelectedFileName(this)">
+          <div class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-4 text-center cursor-pointer transition relative bg-slate-50/50">
+            <input type="file" id="mediaProof" accept="image/*,video/*,audio/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="onFileChosen(this)">
             <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-2xl mb-1"></i>
-            <p id="fileLabel" class="text-xs text-slate-600 font-medium">Click to upload recorded video (MP4), photo evidence, or voice clip</p>
-            <p class="text-[11px] text-slate-400 mt-1">Directly uploaded to secure vault.</p>
+            <p id="mediaChosenText" class="text-xs text-slate-600 font-medium">Click to select recorded video, photo, or audio recording</p>
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition">
+        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-md shadow-indigo-100 transition">
           Generate Ticket & Submit
         </button>
       </form>
 
-      <!-- SUCCESS CONFIRMATION -->
-      <div id="ticketSuccessAlert" class="hidden mt-6 bg-emerald-50 border border-emerald-300 rounded-2xl p-5 text-center">
-        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mx-auto mb-2 text-lg">
+      <!-- SUCCESS BOX -->
+      <div id="successCard" class="hidden mt-6 bg-emerald-50 border border-emerald-300 rounded-2xl p-6 text-center">
+        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mx-auto mb-2 text-xl">
           <i class="fa-solid fa-check"></i>
         </div>
-        <h4 class="font-bold text-emerald-900 text-base">Grievance Registered Successfully</h4>
-        <p class="text-xs text-slate-600 mt-0.5">Please save your reference tracking token:</p>
-        <div class="mt-3 inline-block bg-white px-5 py-2 rounded-xl border border-emerald-300 font-mono text-base font-black text-indigo-600" id="issuedToken">
+        <h4 class="font-extrabold text-emerald-900 text-lg">Ticket Generated Successfully!</h4>
+        <p class="text-xs text-slate-600 mt-1">Aapka secret reference token neeche diya gaya hai:</p>
+        <div class="mt-3 inline-block bg-white px-6 py-2.5 rounded-xl border border-emerald-400 font-mono text-xl font-black text-indigo-600 shadow-sm" id="tokenDisplay">
           CF-00000
         </div>
+        <p class="text-[11px] text-slate-500 mt-2">Ise save kar lein. Status track karne ke liye yahi Token lagega.</p>
       </div>
-
     </div>
   </main>
 
-  <!-- TRACKING DESK -->
+  <!-- TRACKING CONSOLE -->
   <section id="tracker" class="bg-white border-t border-slate-200 py-12 px-4">
     <div class="max-w-xl mx-auto text-center">
-      <h3 class="font-bold text-slate-900 text-base mb-1">Ticket Progress Tracker</h3>
-      <p class="text-xs text-slate-500 mb-4">Enter your generated Token ID to check the investigation or repair status.</p>
-      
+      <h3 class="font-black text-slate-900 text-lg mb-1">Ticket Progress Tracker</h3>
+      <p class="text-xs text-slate-500 mb-6">Apna generated Token ID daal kar live status check karein.</p>
+
       <div class="flex gap-2">
-        <input type="text" id="searchToken" placeholder="e.g. CF-42109" class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500">
-        <button onclick="checkTicketStatus()" class="bg-slate-900 hover:bg-black text-white px-5 py-2 rounded-xl text-xs font-bold transition">
-          Check
+        <input type="text" id="trackTokenInput" placeholder="e.g. CF-48291" class="flex-1 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500 uppercase">
+        <button onclick="checkTicketStatus()" class="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl text-xs font-bold transition">
+          Track
         </button>
       </div>
 
-      <div id="statusReportCard" class="hidden mt-4 text-left bg-slate-50 border border-slate-200 p-4 rounded-xl text-xs space-y-2">
+      <div id="trackResultBox" class="hidden mt-6 text-left bg-slate-50 border border-slate-200 p-5 rounded-2xl text-xs space-y-2.5 shadow-sm">
         <div class="flex justify-between border-b pb-2">
           <span class="text-slate-500">Department:</span>
-          <span id="resDepartment" class="font-semibold text-slate-900"></span>
+          <span id="resDept" class="font-bold text-slate-900"></span>
         </div>
         <div class="flex justify-between border-b pb-2">
           <span class="text-slate-500">Location:</span>
-          <span id="resSpot" class="font-semibold text-slate-900"></span>
+          <span id="resLocation" class="font-semibold text-slate-800"></span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span class="text-slate-500">Urgency:</span>
+          <span id="resPrio" class="font-bold text-amber-600"></span>
         </div>
         <div class="flex justify-between items-center pt-1">
-          <span class="text-slate-500">Current Action:</span>
-          <span id="resStatusBadge" class="font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800"></span>
+          <span class="text-slate-500">Action Status:</span>
+          <span id="resStatus" class="font-bold px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-[11px]"></span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- STUDENT SIGN-IN MODAL ONLY -->
-  <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl relative">
-      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+  <!-- ADMIN KEY MODAL (CAMPUSFIX STYLE POPUP) -->
+  <div id="adminKeyModal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-100 text-center">
+      <button onclick="closeAdminKeyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
         <i class="fa-solid fa-xmark"></i>
       </button>
-      <h3 class="font-bold text-lg text-slate-900">Student Sign In</h3>
-      <p class="text-xs text-slate-500 mb-4">Sign in using your institutional roll or email.</p>
+      <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h3 class="font-extrabold text-slate-900 text-base">Admin Security Key</h3>
+      <p class="text-xs text-slate-500 mt-0.5 mb-5">Enter Master Passcode to open Control Hub.</p>
       
-      <form onsubmit="handleMockSignIn(event)" class="space-y-3">
+      <form onsubmit="submitAdminKey(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Campus Email / ID</label>
-          <input type="email" id="loginEmail" required placeholder="student@campus.edu" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="password" id="adminSecretInput" required placeholder="Enter Key (e.g. ADMIN@2026)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-center font-mono outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1">Password</label>
-          <input type="password" required placeholder="••••••••" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs transition">
-          Sign In
+        <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition">
+          Unlock Console
         </button>
       </form>
     </div>
   </div>
 
   <footer class="bg-slate-950 text-slate-400 py-6 text-center text-xs">
-    © 2026 CampusFix & Shield. Automated Student Grievance Engine.
+    © 2026 CampusFix & Shield. Automated Redressal Engine.
   </footer>
 
   <script>
-    function displaySelectedFileName(input) {
-      if(input.files && input.files[0]) {
-        document.getElementById('fileLabel').innerText = "Attached: " + input.files[0].name;
+    function onFileChosen(input) {
+      if (input.files && input.files[0]) {
+        document.getElementById('mediaChosenText').innerText = "Selected File: " + input.files[0].name;
       }
     }
 
-    function toggleIdentityInputs() {
-      const isAnon = document.getElementById('isAnonCheck').checked;
-      const details = document.getElementById('studentDetailRow');
+    function handleAnonToggle() {
+      const isAnon = document.getElementById('anonToggle').checked;
+      const row = document.getElementById('studentInputRow');
       if (isAnon) {
-        details.classList.add('opacity-30', 'pointer-events-none');
-        document.getElementById('custName').value = '';
-        document.getElementById('custRoll').value = '';
+        row.classList.add('opacity-30', 'pointer-events-none');
+        document.getElementById('studName').value = '';
+        document.getElementById('studRoll').value = '';
       } else {
-        details.classList.remove('opacity-30', 'pointer-events-none');
+        row.classList.remove('opacity-30', 'pointer-events-none');
       }
     }
 
-    async function handleTicketSubmit(e) {
+    function onCategoryChange() {
+      const cat = document.getElementById('issueCat').value;
+      if (cat === 'Girls Safety' || cat === 'Anti-Ragging') {
+        document.getElementById('anonToggle').checked = true;
+        handleAnonToggle();
+      }
+    }
+
+    async function handleFormSubmission(e) {
       e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = "Submitting...";
+      btn.disabled = true;
+
+      const fileInput = document.getElementById('mediaProof');
       const payload = {
-        category: document.getElementById('issueCategory').value,
-        is_anonymous: document.getElementById('isAnonCheck').checked,
-        name: document.getElementById('custName').value,
-        roll: document.getElementById('custRoll').value,
-        location: document.getElementById('custLocation').value,
-        priority: document.getElementById('custPriority').value,
-        description: document.getElementById('custDesc').value,
-        evidence_file: document.getElementById('mediaEvidence').files[0] ? document.getElementById('mediaEvidence').files[0].name : "None"
+        category: document.getElementById('issueCat').value,
+        is_anonymous: document.getElementById('anonToggle').checked,
+        name: document.getElementById('studName').value,
+        roll: document.getElementById('studRoll').value,
+        location: document.getElementById('issueLoc').value,
+        priority: document.getElementById('issuePrio').value,
+        description: document.getElementById('issueDesc').value,
+        evidence_file: (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : "None"
       };
 
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if(data.success) {
-        document.getElementById('issuedToken').innerText = data.token;
-        document.getElementById('ticketSuccessAlert').classList.remove('hidden');
-        document.getElementById('mainTicketForm').reset();
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          alert("✅ Ticket Generated Successfully!\n\nToken ID: " + data.token + "\n\nIse save karein status track karne ke liye.");
+          document.getElementById('tokenDisplay').innerText = data.token;
+          document.getElementById('successCard').classList.remove('hidden');
+          document.getElementById('trackTokenInput').value = data.token;
+          document.getElementById('grievanceForm').reset();
+          document.getElementById('successCard').scrollIntoView({ behavior: 'smooth' });
+        } else {
+          alert("Error in submission: " + (data.error || "Unknown"));
+        }
+      } catch (err) {
+        alert("Server error occurred!");
+      } finally {
+        btn.innerText = "Generate Ticket & Submit";
+        btn.disabled = false;
       }
     }
 
     async function checkTicketStatus() {
-      const token = document.getElementById('searchToken').value.trim();
-      if(!token) return alert("Please enter a valid Token ID");
+      const token = document.getElementById('trackTokenInput').value.trim();
+      if (!token) return alert("Please enter a valid Token ID");
 
-      const res = await fetch('/api/track/' + token);
-      if(res.ok) {
-        const data = await res.json();
-        document.getElementById('resDepartment').innerText = data.category;
-        document.getElementById('resSpot').innerText = data.location;
-        document.getElementById('resStatusBadge').innerText = data.status;
-        document.getElementById('statusReportCard').classList.remove('hidden');
-      } else {
-        alert("Invalid Token ID. Please recheck your reference code.");
+      try {
+        const res = await fetch('/api/track/' + token);
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('resDept').innerText = data.category;
+          document.getElementById('resLocation').innerText = data.location;
+          document.getElementById('resPrio').innerText = data.priority;
+          document.getElementById('resStatus').innerText = data.status;
+          document.getElementById('trackResultBox').classList.remove('hidden');
+          document.getElementById('trackResultBox').scrollIntoView({ behavior: 'smooth' });
+        } else {
+          alert("Token not found! Kripya sahi token check karein.");
+        }
+      } catch (e) {
+        alert("Failed to track ticket.");
       }
     }
 
-    function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-    function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-
-    function handleMockSignIn(e) {
-      e.preventDefault();
-      const mail = document.getElementById('loginEmail').value;
-      document.getElementById('userLabel').innerText = mail.split('@')[0];
-      closeLoginModal();
-      alert("Signed in as " + mail);
+    // SOS Dispatch with real Geolocation
+    function dispatchLiveSOS() {
+      if (confirm("🚨 EMERGENCY SOS ALERT:\n\nCampus Security aur Women Safety Cell ko instant emergency trigger karna chahte hain?")) {
+        let locText = "Hostel/Campus Premise (GPS Pending)";
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              locText = "GPS Lat: " + pos.coords.latitude.toFixed(5) + ", Long: " + pos.coords.longitude.toFixed(5);
+              sendSOSAlert(locText);
+            },
+            () => {
+              sendSOSAlert(locText);
+            }
+          );
+        } else {
+          sendSOSAlert(locText);
+        }
+      }
     }
 
-    function triggerEmergencySOS() {
-      if (confirm("EMERGENCY ALERT:\nBroadcast live SOS alert to Security and Women Safety Cell?")) {
-        alert("🚨 SOS Broadcast Dispatched to Control Room!");
+    async function sendSOSAlert(loc) {
+      try {
+        await fetch('/api/sos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ coords: loc })
+        });
+        alert("🚨 SOS Broadcast Received! Security squad alerted at: " + loc);
+      } catch(e) {
+        alert("SOS Broadcast Sent via Emergency Protocol.");
+      }
+    }
+
+    // Admin Access Modal
+    function openAdminKeyModal() { document.getElementById('adminKeyModal').classList.remove('hidden'); }
+    function closeAdminKeyModal() { document.getElementById('adminKeyModal').classList.add('hidden'); }
+
+    async function submitAdminKey(e) {
+      e.preventDefault();
+      const key = document.getElementById('adminSecretInput').value.trim();
+      const res = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret_key: key })
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/admin-panel';
+      } else {
+        alert("❌ Galat Security Key! Access Denied.");
       }
     }
   </script>

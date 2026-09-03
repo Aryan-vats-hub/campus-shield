@@ -3,101 +3,105 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Vault - Security & Maintenance Desk</title>
+  <title>Control Console - CampusShield</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .mono { font-family: 'JetBrains Mono', monospace; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 sm:p-8">
 
-  {% if not authenticated %}
-  <!-- SECURITY LOCK SCREEN -->
-  <div class="flex items-center justify-center min-h-screen p-4">
-    <div class="bg-slate-800 border border-slate-700 w-full max-w-md p-8 rounded-3xl shadow-2xl text-center">
-      <div class="w-14 h-14 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-indigo-500/20">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
-      <h2 class="text-xl font-bold text-white tracking-tight">Security Clearance Required</h2>
-      <p class="text-xs text-slate-400 mt-1 mb-6">Restricted portal for Wardens, Proctorial Board & Supervisors.</p>
-
-      {% if error %}
-      <div class="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs py-2 px-3 rounded-xl mb-4 font-semibold">
-        {{ error }}
-      </div>
-      {% endif %}
-
-      <form method="POST" action="/admin" class="space-y-4">
-        <div>
-          <input type="password" name="secret_key" required placeholder="Enter Master Security Key" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-center text-white tracking-widest outline-none focus:border-indigo-500 mono transition">
-        </div>
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-indigo-600/30">
-          Unlock Control Center
-        </button>
-      </form>
-    </div>
-  </div>
-
-  {% else %}
-  <!-- UNLOCKED SECURE DASHBOARD -->
-  <div class="p-6 max-w-7xl mx-auto">
-    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- HEADER -->
+    <div class="bg-slate-800 border border-slate-700 p-6 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <div class="flex items-center gap-2">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <h1 class="text-xl font-extrabold text-white">Central Dispatch & Safety Console</h1>
+          <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+          <h1 class="text-xl font-extrabold text-white">Central Security & Dispatch Console</h1>
         </div>
-        <p class="text-xs text-slate-400 mt-1">Live Feed: Infrastructure Faults, Anti-Ragging Reports, and ICC Grievances</p>
+        <p class="text-xs text-slate-400 mt-1">Anti-Ragging Squad, Women Safety ICC & Facilities Board</p>
       </div>
-      <a href="/admin/logout" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-xs font-bold transition">
-        Lock & Sign Out
-      </a>
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-xs text-slate-400 hover:text-white transition">Student Portal</a>
+        <a href="/admin-logout" class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-3.5 py-1.5 rounded-xl text-xs font-bold transition hover:bg-rose-500/30">
+          Sign Out & Lock
+        </a>
+      </div>
     </div>
 
-    <!-- DATA TABLE -->
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-xl">
+    <!-- SOS EMERGENCY ALERTS FLASH BLOCK -->
+    {% if sos_alerts %}
+    <div class="bg-rose-950/60 border-2 border-rose-600/60 p-5 rounded-3xl space-y-3">
+      <div class="flex items-center gap-2 text-rose-400 font-extrabold text-sm uppercase tracking-wider">
+        <i class="fa-solid fa-triangle-exclamation text-rose-500 animate-bounce"></i>
+        Emergency Live SOS Dispatches
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {% for s in sos_alerts %}
+        <div class="bg-rose-900/30 border border-rose-700/50 p-3.5 rounded-2xl flex justify-between items-center text-xs">
+          <div>
+            <div class="font-bold text-white">{{ s[1] }}</div>
+            <div class="text-[11px] text-rose-300 mt-0.5">{{ s[2] }}</div>
+          </div>
+          <span class="bg-rose-600 text-white font-black text-[10px] px-2.5 py-1 rounded-md animate-pulse">
+            {{ s[3] }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- GRIEVANCES TABLE -->
+    <div class="bg-slate-800 border border-slate-700 rounded-3xl overflow-hidden shadow-2xl">
+      <div class="p-5 border-b border-slate-700 flex justify-between items-center">
+        <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Registered Complaints & Repairs</h2>
+        <span class="text-xs bg-slate-900 text-slate-400 px-3 py-1 rounded-full font-mono">Total: {{ complaints|length }}</span>
+      </div>
+
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-900/70 border-b border-slate-700 text-slate-400 font-bold uppercase tracking-wider">
             <tr>
-              <th class="p-3.5">Token ID</th>
-              <th class="p-3.5">Category</th>
-              <th class="p-3.5">Student</th>
-              <th class="p-3.5">Spot / Location</th>
-              <th class="p-3.5">Description</th>
-              <th class="p-3.5">Evidence</th>
-              <th class="p-3.5">Status Action</th>
+              <th class="p-4">Token ID</th>
+              <th class="p-4">Category</th>
+              <th class="p-4">Student</th>
+              <th class="p-4">Location</th>
+              <th class="p-4">Description</th>
+              <th class="p-4">Evidence</th>
+              <th class="p-4">Update Action</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-700/50">
             {% for row in complaints %}
-            <tr class="hover:bg-slate-750/50 transition">
-              <td class="p-3.5 mono font-bold text-indigo-400">{{ row[1] }}</td>
-              <td class="p-3.5">
+            <tr class="hover:bg-slate-700/30 transition">
+              <td class="p-4 mono font-bold text-indigo-400">{{ row[1] }}</td>
+              <td class="p-4">
                 {% if row[2] == 'Girls Safety' %}
-                  <span class="bg-rose-500/15 text-rose-300 px-2 py-0.5 rounded-md font-bold text-[11px] border border-rose-500/30">Girls Safety</span>
+                  <span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 px-2.5 py-1 rounded-lg font-bold text-[11px]">Girls Safety</span>
                 {% elif row[2] == 'Anti-Ragging' %}
-                  <span class="bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-md font-bold text-[11px] border border-amber-500/30">Anti-Ragging</span>
+                  <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-lg font-bold text-[11px]">Anti-Ragging</span>
                 {% else %}
-                  <span class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md text-[11px]">{{ row[2] }}</span>
+                  <span class="bg-slate-700 text-slate-200 px-2 py-0.5 rounded-md text-[11px]">{{ row[2] }}</span>
                 {% endif %}
               </td>
-              <td class="p-3.5 font-medium">{{ row[3] }}</td>
-              <td class="p-3.5 text-slate-300">{{ row[4] }}</td>
-              <td class="p-3.5 text-slate-400 max-w-xs truncate">{{ row[5] }}</td>
-              <td class="p-3.5 mono text-[11px] text-indigo-300">{{ row[6] }}</td>
-              <td class="p-3.5">
-                <form action="/api/update-status" method="POST" class="flex gap-1.5 items-center">
+              <td class="p-4 font-semibold text-slate-200">{{ row[3] }}</td>
+              <td class="p-4 text-slate-300">{{ row[5] }}</td>
+              <td class="p-4 text-slate-400 max-w-xs truncate">{{ row[7] }}</td>
+              <td class="p-4 mono text-indigo-300 text-[11px]">{{ row[8] }}</td>
+              <td class="p-4">
+                <form action="/api/update-status" method="POST" class="flex gap-2">
                   <input type="hidden" name="token_id" value="{{ row[1] }}">
-                  <select name="status" class="bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-[11px] text-slate-200 outline-none">
-                    <option value="Under Review by Department" {% if row[7] == 'Under Review by Department' %}selected{% endif %}>Reviewing</option>
-                    <option value="Squad Dispatched" {% if row[7] == 'Squad Dispatched' %}selected{% endif %}>Squad Sent</option>
-                    <option value="Resolved & Closed" {% if row[7] == 'Resolved & Closed' %}selected{% endif %}>Resolved</option>
+                  <select name="status" class="bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-slate-200 outline-none">
+                    <option value="Under Review by Department" {% if row[9] == 'Under Review by Department' %}selected{% endif %}>Under Review</option>
+                    <option value="Squad Dispatched" {% if row[9] == 'Squad Dispatched' %}selected{% endif %}>Squad Dispatched</option>
+                    <option value="Resolved & Closed" {% if row[9] == 'Resolved & Closed' %}selected{% endif %}>Resolved & Closed</option>
                   </select>
-                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1.5 rounded-lg text-[10px] font-bold">Update</button>
+                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs">Save</button>
                 </form>
               </td>
             </tr>
@@ -106,8 +110,8 @@
         </table>
       </div>
     </div>
+
   </div>
-  {% endif %}
 
 </body>
 </html>

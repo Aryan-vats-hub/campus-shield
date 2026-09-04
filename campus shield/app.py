@@ -9,7 +9,7 @@ app.secret_key = "CAMPUS_SHIELD_SECRET_KEY_2026"
 # Master Security Passcode
 ADMIN_SECRET_KEY = "ADMIN@2026"
 
-# Database Name
+# Centralized Database
 DB_NAME = "campus_v2.db"
 
 def get_db_connection():
@@ -21,7 +21,7 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Complaints Table
+    # Complaints & Maintenance Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS complaints (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,6 +42,7 @@ def init_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sos_alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            alert_type TEXT DEFAULT 'GENERAL',
             location_info TEXT,
             timestamp TEXT,
             status TEXT DEFAULT 'ACTIVE EMERGENCY'
@@ -51,14 +52,14 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Force initialization on startup for Render/Gunicorn
+# Force initialization on startup
 init_db()
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Student Google Sign-In Route
+# Student Google Login Placeholder
 @app.route('/login/google')
 def student_google_login():
     session['student_logged_in'] = True
@@ -141,24 +142,51 @@ def submit_grievance():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Emergency SOS API
+# Live Ticket Status Tracking API
+@app.route('/api/track/<token_id>', methods=['GET'])
+def track_ticket(token_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT token_id, category, location, priority, status, created_at FROM complaints WHERE token_id = ?", (token_id.strip(),))
+        ticket = cursor.fetchone()
+        conn.close()
+
+        if ticket:
+            return jsonify({
+                'status': 'success',
+                'data': {
+                    'token_id': ticket['token_id'],
+                    'category': ticket['category'],
+                    'location': ticket['location'],
+                    'priority': ticket['priority'],
+                    'ticket_status': ticket['status'],
+                    'created_at': ticket['created_at']
+                }
+            })
+        return jsonify({'status': 'error', 'message': 'Invalid Token ID. Grievance not found.'}), 404
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+# Emergency SOS API (Handles General & Women Safety Alert)
 @app.route('/api/sos', methods=['POST'])
 def emergency_sos():
     try:
         data = request.get_json(silent=True) or request.form or {}
+        alert_type = data.get('alert_type', 'GENERAL_SOS')
         location_info = data.get('location', 'Coordinates not shared')
         timestamp = datetime.now().strftime('%d %b %Y, %I:%M %p')
 
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO sos_alerts (location_info, timestamp, status)
-            VALUES (?, ?, 'ACTIVE EMERGENCY')
-        ''', (location_info, timestamp))
+            INSERT INTO sos_alerts (alert_type, location_info, timestamp, status)
+            VALUES (?, ?, ?, 'ACTIVE EMERGENCY')
+        ''', (alert_type, location_info, timestamp))
         conn.commit()
         conn.close()
 
-        return jsonify({'status': 'success', 'message': 'SOS alert transmitted to security'})
+        return jsonify({'status': 'success', 'message': f'{alert_type} transmitted immediately to campus security!'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 

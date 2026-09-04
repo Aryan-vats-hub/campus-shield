@@ -99,6 +99,30 @@ def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
+# --- FIX: STATUS UPDATE ROUTE (BOTH POST FORM & API) ---
+@app.route('/update-status', methods=['POST'])
+@app.route('/api/update-status', methods=['POST'])
+@app.route('/update_status', methods=['POST'])
+def update_status():
+    if not session.get('is_admin'):
+        return redirect(url_for('home'))
+    
+    data = request.get_json(silent=True) or request.form or {}
+    token_id = data.get('token_id') or data.get('token')
+    new_status = data.get('status') or data.get('new_status')
+
+    if token_id and new_status:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE complaints SET status = ? WHERE token_id = ?", (new_status, token_id))
+        conn.commit()
+        conn.close()
+
+    # If it was an AJAX/Fetch request, return JSON; otherwise redirect back to admin panel
+    if request.is_json:
+        return jsonify({'status': 'success', 'message': 'Status updated'})
+    return redirect(url_for('admin_panel'))
+
 @app.route('/submit-grievance', methods=['POST'])
 def submit_grievance_direct():
     try:
@@ -130,6 +154,29 @@ def submit_grievance_direct():
         return redirect(url_for('home', token=token_id))
     except Exception as e:
         return f"Submission Error: {str(e)}"
+
+@app.route('/api/verify-admin', methods=['POST'])
+def verify_admin():
+    data = request.get_json(silent=True) or request.form or {}
+    key = str(data.get('key', '')).strip()
+    if key == ADMIN_SECRET_KEY:
+        session['is_admin'] = True
+        return jsonify({'status': 'success', 'redirect': '/admin-panel'})
+    return jsonify({'status': 'error', 'message': 'Invalid Passcode'}), 401
+
+@app.route('/api/submit', methods=['POST'])
+def submit_grievance_api():
+    data = request.get_json(silent=True) or request.form or {}
+    token_id = f"CF-{random.randint(100000, 999999)}"
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO complaints (token_id, category, student_name, roll_number, location, priority, description, evidence_file, status, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'None', 'Under Review by Department', ?)
+    ''', (token_id, data.get('category','General'), data.get('name','Anon'), data.get('roll','N/A'), data.get('location','Campus'), data.get('priority','Normal'), data.get('description','Issue'), datetime.now().strftime('%d %b %Y, %I:%M %p')))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'success', 'token': token_id})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

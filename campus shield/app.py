@@ -9,7 +9,7 @@ app.secret_key = "CAMPUS_SHIELD_SECRET_KEY_2026"
 # Master Security Passcode
 ADMIN_SECRET_KEY = "ADMIN@2026"
 
-# Centralized Database
+# Centralized Database Name
 DB_NAME = "campus_v2.db"
 
 def get_db_connection():
@@ -52,7 +52,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Force initialization on startup
+# Force initialization at boot time for Gunicorn on Render
 init_db()
 
 @app.route('/')
@@ -65,7 +65,7 @@ def student_google_login():
     session['student_logged_in'] = True
     return redirect(url_for('home'))
 
-# Admin Key Verification API
+# API to verify Admin Key
 @app.route('/api/verify-admin', methods=['POST'])
 def verify_admin():
     try:
@@ -168,7 +168,7 @@ def track_ticket(token_id):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Emergency SOS API (Handles General & Women Safety Alert)
+# Emergency SOS API
 @app.route('/api/sos', methods=['POST'])
 def emergency_sos():
     try:

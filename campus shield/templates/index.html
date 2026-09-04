@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusFix & Shield - Redressal Portal</title>
+  <title>CampusFix & Shield - Redressal & Safety Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14,7 +14,7 @@
     <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2">
         <span class="bg-rose-600 text-white text-[10px] uppercase tracking-wider px-2 py-0.5 rounded font-black animate-pulse">24x7 Help</span>
-        <span>Campus Emergency Numbers:</span>
+        <span>Campus Emergency Helplines:</span>
       </div>
       <div class="flex flex-wrap items-center gap-4 text-[11px]">
         <span><i class="fa-solid fa-phone text-rose-300"></i> Police: <strong class="text-white">112</strong></span>
@@ -55,11 +55,13 @@
           <span>Login</span>
         </a>
 
-        <button type="button" id="adminModalBtn" class="border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+        <!-- Admin Access Direct Button -->
+        <button type="button" onclick="triggerAdminLogin()" class="border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-lock text-slate-500"></i> Admin Access
         </button>
 
-        <button type="button" id="headerSosBtn" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md flex items-center gap-1.5">
+        <!-- SOS Button -->
+        <button type="button" onclick="quickSOS('GENERAL_EMERGENCY')" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-bell"></i> SOS
         </button>
       </div>
@@ -74,7 +76,7 @@
       <div class="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xl mx-auto mb-2 shadow">
         <i class="fa-solid fa-check"></i>
       </div>
-      <h3 class="text-lg font-black text-emerald-900">Issue Registered Successfully!</h3>
+      <h3 class="text-lg font-black text-emerald-900">Campus Issue Registered Successfully!</h3>
       <p class="text-xs text-emerald-700 mt-1">Copy your unique Token ID to track status:</p>
       <div class="mt-3 inline-block bg-white border-2 border-emerald-400 px-6 py-2 rounded-xl text-xl font-mono font-black text-emerald-800 tracking-wider shadow-inner" id="displayToken">
         CF-000000
@@ -95,10 +97,10 @@
           <p class="text-xs text-slate-600 leading-relaxed">Confidential support desk with strict anonymity for girls facing any harassment or security concern.</p>
         </div>
         <div class="flex items-center gap-2 mt-4">
-          <button type="button" id="btnReportWomen" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold py-2 rounded-xl shadow-sm">
+          <button type="button" onclick="selectCat('Women & Girl Safety Grievance')" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold py-2 rounded-xl shadow-sm cursor-pointer">
             Report Privately
           </button>
-          <button type="button" id="btnWomenSos" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm">
+          <button type="button" onclick="quickSOS('WOMEN_SAFETY_ALERT')" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm cursor-pointer">
             Emergency Alert
           </button>
         </div>
@@ -116,7 +118,7 @@
           <p class="text-xs text-slate-600 leading-relaxed">Strict Zero Tolerance campus policy. Instant investigation and disciplinary action against ragging.</p>
         </div>
         <div class="flex items-center gap-2 mt-4">
-          <button type="button" id="btnReportRagging" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-xl shadow-sm">
+          <button type="button" onclick="selectCat('Anti-Ragging Incident')" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-xl shadow-sm cursor-pointer">
             Report Ragging
           </button>
           <a href="tel:18001805522" class="bg-slate-900 hover:bg-black text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm flex items-center justify-center no-underline">
@@ -133,7 +135,7 @@
         <p class="text-xs text-slate-500 mt-1">Submit maintenance breakdowns or campus issues directly to authorities.</p>
       </div>
 
-      <form id="campusIssueForm" class="space-y-5">
+      <form id="campusIssueForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Issue Category *</label>
           <select id="issueCat" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
@@ -149,7 +151,7 @@
         </div>
 
         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center gap-2.5">
-          <input type="checkbox" id="anonToggle" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+          <input type="checkbox" id="anonToggle" onchange="toggleAnonMode()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
           <label for="anonToggle" class="text-xs font-bold text-slate-700 cursor-pointer select-none">
             Keep Identity Anonymous (Hide my Name & Roll No from authorities)
           </label>
@@ -191,7 +193,7 @@
           <input type="file" id="mediaProof" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-md text-sm">
+        <button type="submit" id="submitBtn" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-md text-sm cursor-pointer">
           Submit Campus Issue
         </button>
       </form>
@@ -208,7 +210,7 @@
 
       <div class="flex flex-col sm:flex-row gap-2">
         <input type="text" id="trackTokenInput" placeholder="Enter Token ID (e.g. CF-123456)" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono font-bold tracking-wider uppercase">
-        <button type="button" id="trackBtn" class="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider">
+        <button type="button" onclick="executeTrack()" id="trackBtn" class="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer">
           Track Status
         </button>
       </div>
@@ -242,113 +244,124 @@
 
   </main>
 
-  <!-- ADMIN ACCESS MODAL -->
-  <div id="adminModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl relative border border-slate-100">
-      <div class="flex justify-between items-center mb-4">
-        <h4 class="font-black text-slate-900 text-base flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-indigo-600"></i> Admin Passcode
-        </h4>
-        <button type="button" id="closeAdminModalBtn" class="text-slate-400 hover:text-slate-700">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-      <p class="text-xs text-slate-500 mb-4">Enter Master Admin Passcode to open control panel.</p>
-      <form id="adminForm" class="space-y-4">
-        <input type="password" id="adminPassInput" placeholder="Enter Passcode" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-center font-mono tracking-widest focus:ring-2 focus:ring-indigo-500 focus:outline-none" required autocomplete="current-password">
-        <button type="submit" id="unlockAdminBtn" class="w-full py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold uppercase tracking-wider">
-          Unlock Admin Panel
-        </button>
-      </form>
-    </div>
-  </div>
-
   <footer class="bg-slate-950 text-slate-400 py-6 text-center text-xs">
     <p>&copy; 2026 CampusFix & Shield. Automated Redressal & Safety Engine.</p>
   </footer>
 
-  <!-- CLEAN SCRIPT (NO SYNTAX ERRORS, SECURE LISTENERS) -->
+  <!-- SCRIPT LOGIC (DIRECT, UNBREAKABLE) -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const anonToggle = document.getElementById('anonToggle');
-      const studRow = document.getElementById('studentInputRow');
-      const studName = document.getElementById('studName');
-      const studRoll = document.getElementById('studRoll');
-      const issueCat = document.getElementById('issueCat');
+    function selectCat(catName) {
+      document.getElementById('issueCat').value = catName;
+      document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+    }
 
-      // 1. Anonymous Toggle Listener
-      anonToggle.addEventListener('change', function () {
-        if (anonToggle.checked) {
-          studRow.classList.add('opacity-30', 'pointer-events-none');
-          studName.removeAttribute('required');
-          studRoll.removeAttribute('required');
-          studName.value = '';
-          studRoll.value = '';
+    function toggleAnonMode() {
+      const isAnon = document.getElementById('anonToggle').checked;
+      const row = document.getElementById('studentInputRow');
+      const sName = document.getElementById('studName');
+      const sRoll = document.getElementById('studRoll');
+      if (isAnon) {
+        row.classList.add('opacity-30', 'pointer-events-none');
+        sName.removeAttribute('required');
+        sRoll.removeAttribute('required');
+      } else {
+        row.classList.remove('opacity-30', 'pointer-events-none');
+        sName.setAttribute('required', '');
+        sRoll.setAttribute('required', '');
+      }
+    }
+
+    // Direct, infallible Admin Login via Prompt
+    async function triggerAdminLogin() {
+      const key = prompt("Enter Master Admin Passcode (e.g. ADMIN@2026):");
+      if (!key) return;
+
+      try {
+        const res = await fetch('/api/verify-admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: key.trim() })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+          window.location.href = data.redirect || '/admin-panel';
         } else {
-          studRow.classList.remove('opacity-30', 'pointer-events-none');
-          studName.setAttribute('required', '');
-          studRoll.setAttribute('required', '');
+          alert(data.message || "Invalid Passcode!");
         }
-      });
+      } catch (err) {
+        alert("Verification error: " + err.message);
+      }
+    }
 
-      // 2. Card Category Selectors
-      document.getElementById('btnReportWomen').addEventListener('click', function () {
-        issueCat.value = 'Women & Girl Safety Grievance';
-        document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
-      });
+    // Direct Form Submit
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = "Submitting Issue...";
+      btn.disabled = true;
 
-      document.getElementById('btnReportRagging').addEventListener('click', function () {
-        issueCat.value = 'Anti-Ragging Incident';
-        document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
-      });
+      const fileInput = document.getElementById('mediaProof');
+      const payload = {
+        category: document.getElementById('issueCat').value,
+        is_anonymous: document.getElementById('anonToggle').checked,
+        name: document.getElementById('studName').value,
+        roll: document.getElementById('studRoll').value,
+        location: document.getElementById('issueLoc').value,
+        priority: document.getElementById('issuePrio').value,
+        description: document.getElementById('issueDesc').value,
+        evidence_file: (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : 'None'
+      };
 
-      // 3. Admin Modal Controls
-      const adminModal = document.getElementById('adminModal');
-      document.getElementById('adminModalBtn').addEventListener('click', function () {
-        adminModal.classList.remove('hidden');
-        document.getElementById('adminPassInput').focus();
-      });
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
 
-      document.getElementById('closeAdminModalBtn').addEventListener('click', function () {
-        adminModal.classList.add('hidden');
-      });
+        if (res.ok && data.status === 'success') {
+          document.getElementById('displayToken').innerText = data.token;
+          const banner = document.getElementById('successBanner');
+          banner.classList.remove('hidden');
+          banner.scrollIntoView({ behavior: 'smooth' });
 
-      // 4. Admin Form Submit
-      document.getElementById('adminForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const key = document.getElementById('adminPassInput').value.trim();
-        const btn = document.getElementById('unlockAdminBtn');
-        btn.innerText = 'Verifying...';
-        btn.disabled = true;
-
-        try {
-          const res = await fetch('/api/verify-admin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: key })
-          });
-          const data = await res.json();
-          if (res.ok && data.status === 'success') {
-            window.location.href = data.redirect || '/admin-panel';
-          } else {
-            alert('Access Denied: ' + (data.message || 'Invalid Passcode'));
-          }
-        } catch (err) {
-          alert('Failed to connect to admin verify: ' + err.message);
-        } finally {
-          btn.innerText = 'Unlock Admin Panel';
-          btn.disabled = false;
+          document.getElementById('campusIssueForm').reset();
+          document.getElementById('trackTokenInput').value = data.token;
+        } else {
+          alert('Submission failed: ' + (data.message || 'Unknown error'));
         }
-      });
+      } catch (err) {
+        alert('Submission error: ' + err.message);
+      } finally {
+        btn.innerText = 'Submit Campus Issue';
+        btn.disabled = false;
+      }
+    }
 
-      // 5. Emergency SOS Dispatcher
-      async function triggerSos(type) {
-        if (!confirm('Send immediate alert to Campus Security Control?')) return;
-        try {
-          const res = await fetch('/api/sos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ alert_type: type, location: 'Emergency Action' })
-          });
-          const data = await res.json();
-          alert(data.message || 'Alert Dispatc
+    // Direct Ticket Tracking
+    async function executeTrack() {
+      const token = document.getElementById('trackTokenInput').value.trim();
+      if (!token) {
+        alert('Please enter a Token ID to track.');
+        return;
+      }
+
+      const trackBtn = document.getElementById('trackBtn');
+      trackBtn.innerText = 'Checking...';
+      trackBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/track/' + encodeURIComponent(token));
+        const json = await res.json();
+        const box = document.getElementById('trackResultBox');
+
+        if (res.ok && json.status === 'success') {
+          const item = json.data;
+          document.getElementById('resToken').innerText = item.token_id;
+          document.getElementById('resCat').innerText = item.category;
+          document.getElementById('resLoc').innerText = item.location;
+          document.getElementById('resDate').innerText = item.created_at;
+          document.getElementById('resStatusBadge').innerText = item.ticket_status;
+          box.classList.remove('hidden');
+          box.scrollIntoView

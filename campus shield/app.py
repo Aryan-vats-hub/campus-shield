@@ -12,7 +12,8 @@ ADMIN_SECRET_KEY = "ADMIN@2026"
 def init_db():
     conn = sqlite3.connect('campus.db')
     cursor = conn.cursor()
-    # Complaints & Maintenance Table
+
+    # Create Complaints & Maintenance Table if it does not exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS complaints (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +29,8 @@ def init_db():
             created_at TEXT
         )
     ''')
-    # Emergency SOS Table
+
+    # Create Emergency SOS Table if it does not exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sos_alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +39,14 @@ def init_db():
             status TEXT DEFAULT 'ACTIVE EMERGENCY'
         )
     ''')
+
+    # Schema Migration: Ensure roll_number column exists in existing database
+    try:
+        cursor.execute("ALTER TABLE complaints ADD COLUMN roll_number TEXT")
+    except sqlite3.OperationalError:
+        # Column already exists, safe to continue
+        pass
+
     conn.commit()
     conn.close()
 

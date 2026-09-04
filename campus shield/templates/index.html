@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusFix & Shield - Redressal & Safety Portal</title>
+  <title>CampusFix & Shield - Redressal Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13,7 +13,7 @@
   <header class="bg-rose-950 text-rose-100 text-xs font-semibold py-2 px-4 shadow-inner">
     <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-2">
-        <span class="bg-rose-600 text-white text-[10px] uppercase tracking-wider px-2 py-0.5 rounded font-black animate-pulse">24x7 Help</span>
+        <span class="bg-rose-600 text-white text-[10px] uppercase tracking-wider px-2 py-0.5 rounded font-black">24x7 Help</span>
         <span>Campus Emergency Helplines:</span>
       </div>
       <div class="flex flex-wrap items-center gap-4 text-[11px]">
@@ -38,107 +38,74 @@
         </div>
       </a>
 
-      <div class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600 uppercase tracking-wider">
-        <a href="#reportSection" class="hover:text-indigo-600 transition-colors">Report Campus Issue</a>
-        <a href="#safetyHub" class="hover:text-rose-600 transition-colors">Anti-Ragging & Safety</a>
-        <a href="#trackSection" class="hover:text-indigo-600 transition-colors">Track Ticket</a>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <a href="/login/google" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 shadow-sm no-underline">
-          <svg width="13" height="13" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Login</span>
-        </a>
-
-        <!-- Admin Access Direct Button -->
-        <button type="button" onclick="triggerAdminLogin()" class="border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-lock text-slate-500"></i> Admin Access
+      <!-- DIRECT ADMIN PASSCODE FORM -->
+      <form action="/admin-login-post" method="POST" class="flex items-center gap-1.5">
+        <input type="password" name="admin_key" placeholder="ADMIN@2026" class="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 w-36 sm:w-44 font-mono text-center" required>
+        <button type="submit" class="bg-slate-900 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
+          <i class="fa-solid fa-lock"></i> Admin Login
         </button>
-
-        <!-- SOS Button -->
-        <button type="button" onclick="quickSOS('GENERAL_EMERGENCY')" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-bell"></i> SOS
-        </button>
-      </div>
+      </form>
     </div>
   </nav>
 
-  <!-- MAIN BODY -->
   <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-8 flex-grow">
 
-    <!-- SUCCESS POPUP BANNER -->
-    <div id="successBanner" class="hidden bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-6 text-center shadow-lg">
+    <!-- SUCCESS TOKEN BANNER -->
+    {% if token %}
+    <div class="bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-6 text-center shadow-lg">
       <div class="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xl mx-auto mb-2 shadow">
         <i class="fa-solid fa-check"></i>
       </div>
       <h3 class="text-lg font-black text-emerald-900">Campus Issue Registered Successfully!</h3>
-      <p class="text-xs text-emerald-700 mt-1">Copy your unique Token ID to track status:</p>
-      <div class="mt-3 inline-block bg-white border-2 border-emerald-400 px-6 py-2 rounded-xl text-xl font-mono font-black text-emerald-800 tracking-wider shadow-inner" id="displayToken">
-        CF-000000
+      <p class="text-xs text-emerald-700 mt-1">Your assigned Tracking Token ID is:</p>
+      <div class="mt-3 inline-block bg-white border-2 border-emerald-400 px-6 py-2 rounded-xl text-2xl font-mono font-black text-emerald-800 tracking-widest shadow-inner">
+        {{ token }}
       </div>
     </div>
+    {% endif %}
 
     <!-- SAFETY CARDS -->
-    <section id="safetyHub" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Women Safety -->
-      <div class="bg-gradient-to-br from-pink-50 to-white border-2 border-pink-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-8 h-8 rounded-lg bg-pink-600 text-white flex items-center justify-center text-sm shadow">
-              <i class="fa-solid fa-person-dress"></i>
-            </span>
-            <h3 class="font-extrabold text-slate-900 text-sm">Women & Girls Safety Cell</h3>
-          </div>
-          <p class="text-xs text-slate-600 leading-relaxed">Confidential support desk with strict anonymity for girls facing any harassment or security concern.</p>
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-gradient-to-br from-pink-50 to-white border-2 border-pink-200 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-8 h-8 rounded-lg bg-pink-600 text-white flex items-center justify-center text-sm shadow">
+            <i class="fa-solid fa-person-dress"></i>
+          </span>
+          <h3 class="font-extrabold text-slate-900 text-sm">Women & Girls Safety Cell</h3>
         </div>
-        <div class="flex items-center gap-2 mt-4">
-          <button type="button" onclick="selectCat('Women & Girl Safety Grievance')" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold py-2 rounded-xl shadow-sm cursor-pointer">
-            Report Privately
-          </button>
-          <button type="button" onclick="quickSOS('WOMEN_SAFETY_ALERT')" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm cursor-pointer">
-            Emergency Alert
-          </button>
+        <p class="text-xs text-slate-600 leading-relaxed">Confidential support desk with strict anonymity for girls facing any harassment or security concern.</p>
+        <div class="mt-4 flex gap-2">
+          <a href="#reportSection" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-sm no-underline block text-center flex-1">Report Privately</a>
+          <a href="tel:1091" class="bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold py-2 px-3 rounded-xl shadow-sm no-underline">Call 1091</a>
         </div>
       </div>
 
-      <!-- Anti-Ragging -->
-      <div class="bg-gradient-to-br from-amber-50 to-white border-2 border-amber-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center text-sm shadow">
-              <i class="fa-solid fa-ban"></i>
-            </span>
-            <h3 class="font-extrabold text-slate-900 text-sm">Anti-Ragging Protection Squad</h3>
-          </div>
-          <p class="text-xs text-slate-600 leading-relaxed">Strict Zero Tolerance campus policy. Instant investigation and disciplinary action against ragging.</p>
+      <div class="bg-gradient-to-br from-amber-50 to-white border-2 border-amber-200 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center text-sm shadow">
+            <i class="fa-solid fa-ban"></i>
+          </span>
+          <h3 class="font-extrabold text-slate-900 text-sm">Anti-Ragging Protection Squad</h3>
         </div>
-        <div class="flex items-center gap-2 mt-4">
-          <button type="button" onclick="selectCat('Anti-Ragging Incident')" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-xl shadow-sm cursor-pointer">
-            Report Ragging
-          </button>
-          <a href="tel:18001805522" class="bg-slate-900 hover:bg-black text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm flex items-center justify-center no-underline">
-            Call UGC Squad
-          </a>
+        <p class="text-xs text-slate-600 leading-relaxed">Strict Zero Tolerance campus policy. Instant investigation and disciplinary action against ragging.</p>
+        <div class="mt-4 flex gap-2">
+          <a href="#reportSection" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-sm no-underline block text-center flex-1">Report Ragging</a>
+          <a href="tel:18001805522" class="bg-slate-900 hover:bg-black text-white text-xs font-bold py-2 px-3 rounded-xl shadow-sm no-underline">Call UGC Squad</a>
         </div>
       </div>
     </section>
 
-    <!-- REPORT FORM -->
+    <!-- NATIVE REPORT FORM -->
     <section id="reportSection" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="mb-6 border-b border-slate-100 pb-4">
         <h2 class="text-xl font-black text-slate-900 tracking-tight">Report Campus Issue</h2>
         <p class="text-xs text-slate-500 mt-1">Submit maintenance breakdowns or campus issues directly to authorities.</p>
       </div>
 
-      <form id="campusIssueForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+      <form action="/submit-grievance" method="POST" class="space-y-5">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Issue Category *</label>
-          <select id="issueCat" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+          <select name="category" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
             <option value="Computer Lab & Network">Computer Lab & Network Issues</option>
             <option value="Drinking Water">Drinking Water & Water Coolers</option>
             <option value="Electrical / Lighting">Electrical, Fans & Lighting Breakdown</option>
@@ -151,31 +118,31 @@
         </div>
 
         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center gap-2.5">
-          <input type="checkbox" id="anonToggle" onchange="toggleAnonMode()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+          <input type="checkbox" name="is_anonymous" id="anonToggle" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
           <label for="anonToggle" class="text-xs font-bold text-slate-700 cursor-pointer select-none">
-            Keep Identity Anonymous (Hide my Name & Roll No from authorities)
+            Keep Identity Anonymous (Hide my Name & Roll No)
           </label>
         </div>
 
-        <div id="studentInputRow" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Student Name *</label>
-            <input type="text" id="studName" placeholder="Enter Student Name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Student Name</label>
+            <input type="text" name="name" placeholder="Student Name (Optional if Anonymous)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Student Roll / ID *</label>
-            <input type="text" id="studRoll" placeholder="e.g. 24CSE001" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Student Roll / ID</label>
+            <input type="text" name="roll" placeholder="e.g. 24CSE001" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Exact Location / Room No. *</label>
-            <input type="text" id="issueLoc" placeholder="e.g. Lab 2, 1st Floor" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+            <input type="text" name="location" placeholder="e.g. Lab 2, 1st Floor" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Priority Level *</label>
-            <select id="issuePrio" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+            <select name="priority" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
               <option value="Normal">Normal Maintenance</option>
               <option value="High Priority (Urgent Repair)">High Priority (Urgent Repair)</option>
               <option value="Critical Immediate Attention">Critical Immediate Attention</option>
@@ -185,22 +152,17 @@
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Detailed Description *</label>
-          <textarea id="issueDesc" rows="4" placeholder="Detail the breakdown or incident clearly..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required></textarea>
+          <textarea name="description" rows="4" placeholder="Detail the breakdown or incident clearly..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required></textarea>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Upload Evidence (Optional)</label>
-          <input type="file" id="mediaProof" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-        </div>
-
-        <button type="submit" id="submitBtn" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-md text-sm cursor-pointer">
+        <button type="submit" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-md text-sm cursor-pointer">
           Submit Campus Issue
         </button>
       </form>
     </section>
 
-    <!-- LIVE TRACKER -->
-    <section id="trackSection" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
+    <!-- TICKET TRACKER -->
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="mb-4">
         <h3 class="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
           <i class="fa-solid fa-magnifying-glass text-indigo-600"></i> Track Ticket Progress
@@ -208,38 +170,42 @@
         <p class="text-xs text-slate-500">Check current action status using your assigned Token ID.</p>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-2">
-        <input type="text" id="trackTokenInput" placeholder="Enter Token ID (e.g. CF-123456)" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono font-bold tracking-wider uppercase">
-        <button type="button" onclick="executeTrack()" id="trackBtn" class="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer">
+      <form action="/" method="GET" class="flex flex-col sm:flex-row gap-2">
+        <input type="text" name="track_token" placeholder="Enter Token ID (e.g. CF-123456)" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono font-bold tracking-wider uppercase" required>
+        <button type="submit" class="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer">
           Track Status
         </button>
-      </div>
+      </form>
 
-      <div id="trackResultBox" class="hidden mt-6 p-5 rounded-xl border-2 border-indigo-100 bg-indigo-50/40">
+      {% if track_result %}
+      <div class="mt-6 p-5 rounded-xl border-2 border-indigo-100 bg-indigo-50/40">
         <div class="flex flex-wrap items-center justify-between border-b border-indigo-100 pb-3 mb-4">
           <div>
             <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Token ID</span>
-            <p id="resToken" class="font-mono font-black text-indigo-900 text-base"></p>
+            <p class="font-mono font-black text-indigo-900 text-base">{{ track_result['token_id'] }}</p>
           </div>
           <div>
-            <span id="resStatusBadge" class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-600 text-white shadow-sm"></span>
+            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-600 text-white shadow-sm">
+              {{ track_result['status'] }}
+            </span>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div>
             <span class="text-slate-500 font-bold">Category:</span>
-            <p id="resCat" class="font-bold text-slate-800 mt-0.5"></p>
+            <p class="font-bold text-slate-800 mt-0.5">{{ track_result['category'] }}</p>
           </div>
           <div>
             <span class="text-slate-500 font-bold">Location:</span>
-            <p id="resLoc" class="font-bold text-slate-800 mt-0.5"></p>
+            <p class="font-bold text-slate-800 mt-0.5">{{ track_result['location'] }}</p>
           </div>
           <div>
             <span class="text-slate-500 font-bold">Registered On:</span>
-            <p id="resDate" class="font-bold text-slate-800 mt-0.5"></p>
+            <p class="font-bold text-slate-800 mt-0.5">{{ track_result['created_at'] }}</p>
           </div>
         </div>
       </div>
+      {% endif %}
     </section>
 
   </main>
@@ -248,120 +214,5 @@
     <p>&copy; 2026 CampusFix & Shield. Automated Redressal & Safety Engine.</p>
   </footer>
 
-  <!-- SCRIPT LOGIC (DIRECT, UNBREAKABLE) -->
-  <script>
-    function selectCat(catName) {
-      document.getElementById('issueCat').value = catName;
-      document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function toggleAnonMode() {
-      const isAnon = document.getElementById('anonToggle').checked;
-      const row = document.getElementById('studentInputRow');
-      const sName = document.getElementById('studName');
-      const sRoll = document.getElementById('studRoll');
-      if (isAnon) {
-        row.classList.add('opacity-30', 'pointer-events-none');
-        sName.removeAttribute('required');
-        sRoll.removeAttribute('required');
-      } else {
-        row.classList.remove('opacity-30', 'pointer-events-none');
-        sName.setAttribute('required', '');
-        sRoll.setAttribute('required', '');
-      }
-    }
-
-    // Direct, infallible Admin Login via Prompt
-    async function triggerAdminLogin() {
-      const key = prompt("Enter Master Admin Passcode (e.g. ADMIN@2026):");
-      if (!key) return;
-
-      try {
-        const res = await fetch('/api/verify-admin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: key.trim() })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          window.location.href = data.redirect || '/admin-panel';
-        } else {
-          alert(data.message || "Invalid Passcode!");
-        }
-      } catch (err) {
-        alert("Verification error: " + err.message);
-      }
-    }
-
-    // Direct Form Submit
-    async function handleFormSubmit(e) {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.innerText = "Submitting Issue...";
-      btn.disabled = true;
-
-      const fileInput = document.getElementById('mediaProof');
-      const payload = {
-        category: document.getElementById('issueCat').value,
-        is_anonymous: document.getElementById('anonToggle').checked,
-        name: document.getElementById('studName').value,
-        roll: document.getElementById('studRoll').value,
-        location: document.getElementById('issueLoc').value,
-        priority: document.getElementById('issuePrio').value,
-        description: document.getElementById('issueDesc').value,
-        evidence_file: (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : 'None'
-      };
-
-      try {
-        const res = await fetch('/api/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        if (res.ok && data.status === 'success') {
-          document.getElementById('displayToken').innerText = data.token;
-          const banner = document.getElementById('successBanner');
-          banner.classList.remove('hidden');
-          banner.scrollIntoView({ behavior: 'smooth' });
-
-          document.getElementById('campusIssueForm').reset();
-          document.getElementById('trackTokenInput').value = data.token;
-        } else {
-          alert('Submission failed: ' + (data.message || 'Unknown error'));
-        }
-      } catch (err) {
-        alert('Submission error: ' + err.message);
-      } finally {
-        btn.innerText = 'Submit Campus Issue';
-        btn.disabled = false;
-      }
-    }
-
-    // Direct Ticket Tracking
-    async function executeTrack() {
-      const token = document.getElementById('trackTokenInput').value.trim();
-      if (!token) {
-        alert('Please enter a Token ID to track.');
-        return;
-      }
-
-      const trackBtn = document.getElementById('trackBtn');
-      trackBtn.innerText = 'Checking...';
-      trackBtn.disabled = true;
-
-      try {
-        const res = await fetch('/api/track/' + encodeURIComponent(token));
-        const json = await res.json();
-        const box = document.getElementById('trackResultBox');
-
-        if (res.ok && json.status === 'success') {
-          const item = json.data;
-          document.getElementById('resToken').innerText = item.token_id;
-          document.getElementById('resCat').innerText = item.category;
-          document.getElementById('resLoc').innerText = item.location;
-          document.getElementById('resDate').innerText = item.created_at;
-          document.getElementById('resStatusBadge').innerText = item.ticket_status;
-          box.classList.remove('hidden');
-          box.scrollIntoView
+</body>
+</html>

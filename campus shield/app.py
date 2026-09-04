@@ -24,6 +24,7 @@ def init_db():
             category TEXT,
             student_name TEXT,
             roll_number TEXT,
+            student_email TEXT DEFAULT 'Not Logged In',
             location TEXT,
             priority TEXT,
             description TEXT,
@@ -32,6 +33,12 @@ def init_db():
             created_at TEXT
         )
     ''')
+    # Backward compatibility: agar student_email column na ho toh add kar do
+    try:
+        cursor.execute("ALTER TABLE complaints ADD COLUMN student_email TEXT DEFAULT 'Not Logged In'")
+    except sqlite3.OperationalError:
+        pass
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sos_alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,11 +73,21 @@ def home():
         track_result = cursor.fetchone()
         conn.close()
 
-    return render_template('index.html', token=token, track_result=track_result)
+    user_email = session.get('user_email')
+    return render_template('index.html', token=token, track_result=track_result, user_email=user_email)
 
+# --- STUDENT GMAIL LOGIN SIMULATION ---
 @app.route('/login/google')
 def student_google_login():
-    session['student_logged_in'] = True
+    # College Demo Google Login Simulation
+    session['user_email'] = "student.demo@campus.edu"
+    session['student_name'] = "Verified Student"
+    return redirect(url_for('home'))
+
+@app.route('/logout')
+def student_logout():
+    session.pop('user_email', None)
+    session.pop('student_name', None)
     return redirect(url_for('home'))
 
 @app.route('/admin-login-post', methods=['POST'])
@@ -99,7 +116,7 @@ def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-# --- FIX: STATUS UPDATE ROUTE (BOTH POST FORM & API) ---
+# --- STATUS UPDATE ---
 @app.route('/update-status', methods=['POST'])
 @app.route('/api/update-status', methods=['POST'])
 @app.route('/update_status', methods=['POST'])
@@ -118,10 +135,26 @@ def update_status():
         conn.commit()
         conn.close()
 
-    # If it was an AJAX/Fetch request, return JSON; otherwise redirect back to admin panel
     if request.is_json:
         return jsonify({'status': 'success', 'message': 'Status updated'})
     return redirect(url_for('admin_panel'))
+
+# --- DELETE COMPLAINT (FOR ADMIN & STUDENT) ---
+@app.route('/delete-complaint', methods=['POST'])
+def delete_complaint():
+    token_id = request.form.get('token_id')
+    source = request.form.get('source', 'student')
+
+    if token_id:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM complaints WHERE token_id = ?", (token_id,))
+        conn.commit()
+        conn.close()
+
+    if source == 'admin':
+        return redirect(url_for('admin_panel'))
+    return redirect(url_for('home'))
 
 @app.route('/submit-grievance', methods=['POST'])
 def submit_grievance_direct():
@@ -132,9 +165,11 @@ def submit_grievance_direct():
         if is_anonymous:
             student_name = "Anonymous"
             roll_number = "N/A"
+            student_email = "Hidden (Anonymous)"
         else:
-            student_name = request.form.get('name') or 'Anonymous'
+            student_name = request.form.get('name') or session.get('student_name') or 'Anonymous'
             roll_number = request.form.get('roll') or 'N/A'
+            student_email = session.get('user_email') or 'Not Logged In'
 
         location = request.form.get('location') or 'Not specified'
         priority = request.form.get('priority', 'Normal')
@@ -145,9 +180,9 @@ def submit_grievance_direct():
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO complaints (token_id, category, student_name, roll_number, location, priority, description, evidence_file, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'None', 'Under Review by Department', ?)
-        ''', (token_id, category, student_name, roll_number, location, priority, description, created_at))
+            INSERT INTO complaints (token_id, category, student_name, roll_number, student_email, location, priority, description, evidence_file, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'None', 'Under Review by Department', ?)
+        ''', (token_id, category, student_name, roll_number, student_email, location, priority, description, created_at))
         conn.commit()
         conn.close()
 
@@ -163,20 +198,6 @@ def verify_admin():
         session['is_admin'] = True
         return jsonify({'status': 'success', 'redirect': '/admin-panel'})
     return jsonify({'status': 'error', 'message': 'Invalid Passcode'}), 401
-
-@app.route('/api/submit', methods=['POST'])
-def submit_grievance_api():
-    data = request.get_json(silent=True) or request.form or {}
-    token_id = f"CF-{random.randint(100000, 999999)}"
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO complaints (token_id, category, student_name, roll_number, location, priority, description, evidence_file, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'None', 'Under Review by Department', ?)
-    ''', (token_id, data.get('category','General'), data.get('name','Anon'), data.get('roll','N/A'), data.get('location','Campus'), data.get('priority','Normal'), data.get('description','Issue'), datetime.now().strftime('%d %b %Y, %I:%M %p')))
-    conn.commit()
-    conn.close()
-    return jsonify({'status': 'success', 'token': token_id})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

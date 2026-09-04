@@ -6,10 +6,7 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "CAMPUS_SHIELD_SECRET_KEY_2026"
 
-# Master Security Passcode
 ADMIN_SECRET_KEY = "ADMIN@2026"
-
-# Centralized Database
 DB_NAME = "campus_v2.db"
 
 def get_db_connection():
@@ -20,8 +17,6 @@ def get_db_connection():
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-
-    # Complaints Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS complaints (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,8 +32,6 @@ def init_db():
             created_at TEXT
         )
     ''')
-
-    # Emergency Alerts Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sos_alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,13 +41,11 @@ def init_db():
             status TEXT DEFAULT 'ACTIVE EMERGENCY'
         )
     ''')
-
     conn.commit()
     conn.close()
 
 init_db()
 
-# --- FORCE CHROME TO NEVER CACHE OLD CODE ---
 @app.after_request
 def add_header(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
@@ -64,41 +55,43 @@ def add_header(response):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    token = request.args.get('token')
+    track_result = None
+    search_token = request.args.get('track_token')
+    
+    if search_token:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM complaints WHERE token_id = ?", (search_token.strip(),))
+        track_result = cursor.fetchone()
+        conn.close()
+
+    return render_template('index.html', token=token, track_result=track_result)
 
 @app.route('/login/google')
 def student_google_login():
     session['student_logged_in'] = True
     return redirect(url_for('home'))
 
-@app.route('/api/verify-admin', methods=['POST'])
-def verify_admin():
-    try:
-        data = request.get_json(silent=True) or request.form or {}
-        key = data.get('key') or data.get('admin_password') or ''
-        key = str(key).strip()
-
-        if key == ADMIN_SECRET_KEY:
-            session['is_admin'] = True
-            return jsonify({'status': 'success', 'message': 'Authenticated', 'redirect': '/admin-panel'})
-        return jsonify({'status': 'error', 'message': 'Invalid Security Passcode'}), 401
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+@app.route('/admin-login-post', methods=['POST'])
+def admin_login_post():
+    key = request.form.get('admin_key', '').strip()
+    if key == ADMIN_SECRET_KEY:
+        session['is_admin'] = True
+        return redirect(url_for('admin_panel'))
+    return "<script>alert('Invalid Passcode!'); window.location.href='/';</script>"
 
 @app.route('/admin-panel')
 def admin_panel():
     if not session.get('is_admin'):
         return redirect(url_for('home'))
-
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM complaints ORDER BY id DESC")
     complaints = cursor.fetchall()
-
     cursor.execute("SELECT * FROM sos_alerts ORDER BY id DESC")
     sos_alerts = cursor.fetchall()
     conn.close()
-
     return render_template('admin.html', complaints=complaints, alerts=sos_alerts)
 
 @app.route('/admin-logout')
@@ -106,27 +99,22 @@ def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-@app.route('/api/submit', methods=['POST'])
-def submit_grievance():
+@app.route('/submit-grievance', methods=['POST'])
+def submit_grievance_direct():
     try:
-        data = request.get_json(silent=True) or request.form or {}
-
-        category = data.get('category', 'General')
-        is_anonymous = data.get('is_anonymous', False)
-        if isinstance(is_anonymous, str):
-            is_anonymous = (is_anonymous.lower() == 'true')
-
+        category = request.form.get('category', 'General Infrastructure')
+        is_anonymous = request.form.get('is_anonymous') == 'on'
+        
         if is_anonymous:
             student_name = "Anonymous"
             roll_number = "N/A"
         else:
-            student_name = data.get('name') or data.get('student_name') or 'Anonymous'
-            roll_number = data.get('roll') or data.get('roll_number') or 'N/A'
+            student_name = request.form.get('name') or 'Anonymous'
+            roll_number = request.form.get('roll') or 'N/A'
 
-        location = data.get('location') or data.get('location_info') or 'Not specified'
-        priority = data.get('priority', 'Normal')
-        description = data.get('description', '')
-        evidence_file = data.get('evidence_file', 'None')
+        location = request.form.get('location') or 'Not specified'
+        priority = request.form.get('priority', 'Normal')
+        description = request.form.get('description', '')
         created_at = datetime.now().strftime('%d %b %Y, %I:%M %p')
         token_id = f"CF-{random.randint(100000, 999999)}"
 
@@ -134,61 +122,14 @@ def submit_grievance():
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO complaints (token_id, category, student_name, roll_number, location, priority, description, evidence_file, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Under Review by Department', ?)
-        ''', (token_id, category, student_name, roll_number, location, priority, description, evidence_file, created_at))
-
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'None', 'Under Review by Department', ?)
+        ''', (token_id, category, student_name, roll_number, location, priority, description, created_at))
         conn.commit()
         conn.close()
 
-        return jsonify({'status': 'success', 'token': token_id})
+        return redirect(url_for('home', token=token_id))
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-
-@app.route('/api/track/<token_id>', methods=['GET'])
-def track_ticket(token_id):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT token_id, category, location, priority, status, created_at FROM complaints WHERE token_id = ?", (token_id.strip(),))
-        ticket = cursor.fetchone()
-        conn.close()
-
-        if ticket:
-            return jsonify({
-                'status': 'success',
-                'data': {
-                    'token_id': ticket['token_id'],
-                    'category': ticket['category'],
-                    'location': ticket['location'],
-                    'priority': ticket['priority'],
-                    'ticket_status': ticket['status'],
-                    'created_at': ticket['created_at']
-                }
-            })
-        return jsonify({'status': 'error', 'message': 'Invalid Token ID. Grievance not found.'}), 404
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-
-@app.route('/api/sos', methods=['POST'])
-def emergency_sos():
-    try:
-        data = request.get_json(silent=True) or request.form or {}
-        alert_type = data.get('alert_type', 'GENERAL_SOS')
-        location_info = data.get('location', 'Coordinates not shared')
-        timestamp = datetime.now().strftime('%d %b %Y, %I:%M %p')
-
-        conn = sqlite3.connect(DB_NAME)
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO sos_alerts (alert_type, location_info, timestamp, status)
-            VALUES (?, ?, ?, 'ACTIVE EMERGENCY')
-        ''', (alert_type, location_info, timestamp))
-        conn.commit()
-        conn.close()
-
-        return jsonify({'status': 'success', 'message': f'{alert_type} transmitted immediately to campus security!'})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+        return f"Submission Error: {str(e)}"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

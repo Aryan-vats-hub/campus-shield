@@ -9,7 +9,7 @@ app.secret_key = "CAMPUS_SHIELD_SECRET_KEY_2026"
 # Master Security Passcode
 ADMIN_SECRET_KEY = "ADMIN@2026"
 
-# Centralized Database Name
+# Centralized Database
 DB_NAME = "campus_v2.db"
 
 def get_db_connection():
@@ -21,7 +21,7 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Complaints & Maintenance Table
+    # Complaints Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS complaints (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +38,7 @@ def init_db():
         )
     ''')
 
-    # Emergency SOS Table
+    # Emergency Alerts Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sos_alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,20 +52,25 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Force initialization at boot time for Gunicorn on Render
 init_db()
+
+# --- FORCE CHROME TO NEVER CACHE OLD CODE ---
+@app.after_request
+def add_header(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Student Google Login Placeholder
 @app.route('/login/google')
 def student_google_login():
     session['student_logged_in'] = True
     return redirect(url_for('home'))
 
-# API to verify Admin Key
 @app.route('/api/verify-admin', methods=['POST'])
 def verify_admin():
     try:
@@ -80,7 +85,6 @@ def verify_admin():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Admin Panel Route
 @app.route('/admin-panel')
 def admin_panel():
     if not session.get('is_admin'):
@@ -97,13 +101,11 @@ def admin_panel():
 
     return render_template('admin.html', complaints=complaints, alerts=sos_alerts)
 
-# Admin Logout
 @app.route('/admin-logout')
 def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-# Ticket Submission API
 @app.route('/api/submit', methods=['POST'])
 def submit_grievance():
     try:
@@ -142,7 +144,6 @@ def submit_grievance():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Live Ticket Status Tracking API
 @app.route('/api/track/<token_id>', methods=['GET'])
 def track_ticket(token_id):
     try:
@@ -168,7 +169,6 @@ def track_ticket(token_id):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Emergency SOS API
 @app.route('/api/sos', methods=['POST'])
 def emergency_sos():
     try:

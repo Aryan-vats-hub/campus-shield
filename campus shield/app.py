@@ -9,7 +9,7 @@ app.secret_key = "CAMPUS_SHIELD_SECRET_KEY_2026"
 # Master Security Passcode
 ADMIN_SECRET_KEY = "ADMIN@2026"
 
-# Centralized Database Name
+# Database Name
 DB_NAME = "campus_v2.db"
 
 def get_db_connection():
@@ -21,7 +21,7 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Complaints & Maintenance Table
+    # Complaints Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS complaints (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,41 +51,45 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Force initialization at boot time for Gunicorn/Render
+# Force initialization on startup for Render/Gunicorn
 init_db()
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Student Google Sign-in Placeholder Route
+# Student Google Sign-In Route
 @app.route('/login/google')
 def student_google_login():
-    # Set default session or redirect to OAuth provider
     session['student_logged_in'] = True
     return redirect(url_for('home'))
 
-# API to verify Admin Key and Start Session
+# Admin Key Verification API
 @app.route('/api/verify-admin', methods=['POST'])
 def verify_admin():
-    data = request.get_json() or {}
-    key = data.get('key', '').strip()
-    if key == ADMIN_SECRET_KEY:
-        session['is_admin'] = True
-        return jsonify({'status': 'success', 'message': 'Authenticated'})
-    return jsonify({'status': 'error', 'message': 'Invalid Security Passcode'}), 401
+    try:
+        data = request.get_json(silent=True) or request.form or {}
+        key = data.get('key') or data.get('admin_password') or ''
+        key = str(key).strip()
+
+        if key == ADMIN_SECRET_KEY:
+            session['is_admin'] = True
+            return jsonify({'status': 'success', 'message': 'Authenticated', 'redirect': '/admin-panel'})
+        return jsonify({'status': 'error', 'message': 'Invalid Security Passcode'}), 401
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 # Admin Panel Route
 @app.route('/admin-panel')
 def admin_panel():
     if not session.get('is_admin'):
         return redirect(url_for('home'))
-    
+
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM complaints ORDER BY id DESC")
     complaints = cursor.fetchall()
-    
+
     cursor.execute("SELECT * FROM sos_alerts ORDER BY id DESC")
     sos_alerts = cursor.fetchall()
     conn.close()
@@ -98,25 +102,25 @@ def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-# API endpoint for submitting grievances
+# Ticket Submission API
 @app.route('/api/submit', methods=['POST'])
 def submit_grievance():
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'status': 'error', 'message': 'No data payload received'}), 400
+        data = request.get_json(silent=True) or request.form or {}
 
         category = data.get('category', 'General')
         is_anonymous = data.get('is_anonymous', False)
-        
+        if isinstance(is_anonymous, str):
+            is_anonymous = (is_anonymous.lower() == 'true')
+
         if is_anonymous:
             student_name = "Anonymous"
             roll_number = "N/A"
         else:
-            student_name = data.get('name', 'Anonymous')
-            roll_number = data.get('roll', 'N/A')
+            student_name = data.get('name') or data.get('student_name') or 'Anonymous'
+            roll_number = data.get('roll') or data.get('roll_number') or 'N/A'
 
-        location = data.get('location', 'Not specified')
+        location = data.get('location') or data.get('location_info') or 'Not specified'
         priority = data.get('priority', 'Normal')
         description = data.get('description', '')
         evidence_file = data.get('evidence_file', 'None')
@@ -129,7 +133,7 @@ def submit_grievance():
             INSERT INTO complaints (token_id, category, student_name, roll_number, location, priority, description, evidence_file, status, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Under Review by Department', ?)
         ''', (token_id, category, student_name, roll_number, location, priority, description, evidence_file, created_at))
-        
+
         conn.commit()
         conn.close()
 
@@ -137,11 +141,11 @@ def submit_grievance():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# API endpoint for Emergency SOS
+# Emergency SOS API
 @app.route('/api/sos', methods=['POST'])
 def emergency_sos():
     try:
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or request.form or {}
         location_info = data.get('location', 'Coordinates not shared')
         timestamp = datetime.now().strftime('%d %b %Y, %I:%M %p')
 

@@ -35,13 +35,21 @@ def init_db():
             description TEXT,
             evidence_file TEXT,
             status TEXT DEFAULT 'Under Review by Department',
+            assigned_team TEXT DEFAULT 'Unassigned (Under Review)',
+            admin_notes TEXT DEFAULT 'Ticket logged. Awaiting technical team assignment.',
             created_at TEXT
         )
     ''')
-    try:
+    
+    # Check and add columns safely if upgrading from existing DB
+    cursor.execute("PRAGMA table_info(complaints)")
+    columns = [row[1] for row in cursor.fetchall()]
+    if 'assigned_team' not in columns:
+        cursor.execute("ALTER TABLE complaints ADD COLUMN assigned_team TEXT DEFAULT 'Unassigned (Under Review)'")
+    if 'admin_notes' not in columns:
+        cursor.execute("ALTER TABLE complaints ADD COLUMN admin_notes TEXT DEFAULT 'Ticket logged. Awaiting technical team assignment.'")
+    if 'student_email' not in columns:
         cursor.execute("ALTER TABLE complaints ADD COLUMN student_email TEXT DEFAULT 'Not Logged In'")
-    except sqlite3.OperationalError:
-        pass
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sos_alerts (
@@ -126,7 +134,7 @@ def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-# --- UPDATE STATUS ---
+# --- UPDATE STATUS & ASSIGN TEAM ---
 @app.route('/update-status', methods=['POST'])
 @app.route('/api/update-status', methods=['POST'])
 @app.route('/update_status', methods=['POST'])
@@ -137,16 +145,22 @@ def update_status():
     data = request.get_json(silent=True) or request.form or {}
     token_id = data.get('token_id') or data.get('token')
     new_status = data.get('status') or data.get('new_status')
+    assigned_team = data.get('assigned_team') or 'Unassigned (Under Review)'
+    admin_notes = data.get('admin_notes') or 'Action initiated by administration.'
 
-    if token_id and new_status:
+    if token_id:
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
-        cursor.execute("UPDATE complaints SET status = ? WHERE token_id = ?", (new_status, token_id))
+        cursor.execute("""
+            UPDATE complaints 
+            SET status = ?, assigned_team = ?, admin_notes = ? 
+            WHERE token_id = ?
+        """, (new_status, assigned_team, admin_notes, token_id))
         conn.commit()
         conn.close()
 
     if request.is_json:
-        return jsonify({'status': 'success', 'message': 'Status updated'})
+        return jsonify({'status': 'success', 'message': 'Status and team updated'})
     return redirect(url_for('admin_panel'))
 
 # --- DELETE COMPLAINT ---
@@ -166,7 +180,7 @@ def delete_complaint():
         return redirect(url_for('admin_panel'))
     return redirect(url_for('home'))
 
-# --- SUBMIT GRIEVANCE WITH PHOTO ATTACHMENT ---
+# --- SUBMIT GRIEVANCE ---
 @app.route('/submit-grievance', methods=['POST'])
 def submit_grievance_direct():
     try:
@@ -199,8 +213,8 @@ def submit_grievance_direct():
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO complaints (token_id, category, student_name, roll_number, student_email, location, priority, description, evidence_file, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Under Review by Department', ?)
+            INSERT INTO complaints (token_id, category, student_name, roll_number, student_email, location, priority, description, evidence_file, status, assigned_team, admin_notes, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Under Review by Department', 'Unassigned (Under Review)', 'Ticket logged. Awaiting technical team assignment.', ?)
         ''', (token_id, category, student_name, roll_number, student_email, location, priority, description, evidence_filename, created_at))
         conn.commit()
         conn.close()

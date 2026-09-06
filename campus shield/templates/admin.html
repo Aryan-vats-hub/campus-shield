@@ -9,7 +9,7 @@
   <style>
     @media print {
       body { background-color: #fff !important; color: #000 !important; }
-      header, .no-print, button, form select { display: none !important; }
+      header, .no-print, button, form select, form input { display: none !important; }
       table { border-collapse: collapse; width: 100%; color: #000 !important; }
       th, td { border: 1px solid #ccc !important; padding: 8px !important; color: #000 !important; }
       .print-only { display: block !important; }
@@ -33,7 +33,6 @@
       </div>
       
       <div class="flex items-center gap-3">
-        <!-- 1-CLICK AUDIT REPORT PRINT BUTTON -->
         <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md no-underline inline-flex items-center gap-1.5 transition cursor-pointer">
           <i class="fa-solid fa-file-pdf"></i> Export Audit Report
         </button>
@@ -47,7 +46,6 @@
     </div>
   </header>
 
-  <!-- PRINT ONLY INSTITUTIONAL HEADER -->
   <div class="print-only p-6 text-center border-b border-black mb-4">
     <h2 class="text-xl font-bold uppercase">Campus Safety & Grievance Redressal Cell</h2>
     <p class="text-xs">Official Administrative Audit & Resolution Summary Report</p>
@@ -56,7 +54,7 @@
 
   <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 flex-grow space-y-8">
 
-    <!-- ANALYTICS METRICS OVERVIEW -->
+    <!-- METRICS OVERVIEW -->
     {% set total_cnt = complaints|length %}
     {% set resolved_cnt = namespace(value=0) %}
     {% set emergency_cnt = namespace(value=0) %}
@@ -116,7 +114,7 @@
       <div class="p-6 border-b border-slate-700 flex flex-wrap items-center justify-between gap-4 no-print">
         <div>
           <h2 class="text-base font-black text-white">Active Incident & Maintenance Log</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Real-time status updates and department action control</p>
+          <p class="text-xs text-slate-400 mt-0.5">Assign field staff, update progress notes, and dispatch technicians</p>
         </div>
       </div>
 
@@ -128,7 +126,7 @@
               <th class="p-4">Category & Location</th>
               <th class="p-4">Reported By</th>
               <th class="p-4">Priority, Details & Evidence</th>
-              <th class="p-4">Current Status</th>
+              <th class="p-4 min-w-[240px]">Dispatch Management</th>
               <th class="p-4 text-center no-print">Action</th>
             </tr>
           </thead>
@@ -166,20 +164,50 @@
                   </div>
                   {% endif %}
                 </td>
+                
+                <!-- DISPATCH MANAGEMENT (TEAM + NOTES + STATUS) -->
                 <td class="p-4 align-top">
-                  <span class="block font-bold text-indigo-300 print-only">{{ c['status'] }}</span>
+                  <div class="print-only text-xs">
+                    <p><strong>Status:</strong> {{ c['status'] }}</p>
+                    <p><strong>Assigned:</strong> {{ c['assigned_team'] }}</p>
+                    <p><strong>Notes:</strong> {{ c['admin_notes'] }}</p>
+                  </div>
                   <form action="/update-status" method="POST" class="space-y-2 no-print">
                     <input type="hidden" name="token_id" value="{{ c['token_id'] }}">
-                    <select name="status" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
-                      <option value="Under Review by Department" {% if c['status'] == 'Under Review by Department' %}selected{% endif %}>Under Review</option>
-                      <option value="Technician Dispatched / In Action" {% if c['status'] == 'Technician Dispatched / In Action' %}selected{% endif %}>In Action</option>
-                      <option value="Resolved & Closed" {% if c['status'] == 'Resolved & Closed' %}selected{% endif %}>Resolved & Closed</option>
-                    </select>
+                    
+                    <div>
+                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Status:</label>
+                      <select name="status" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="Under Review by Department" {% if c['status'] == 'Under Review by Department' %}selected{% endif %}>Under Review</option>
+                        <option value="Technician Dispatched / In Action" {% if c['status'] == 'Technician Dispatched / In Action' %}selected{% endif %}>In Action</option>
+                        <option value="Resolved & Closed" {% if c['status'] == 'Resolved & Closed' %}selected{% endif %}>Resolved & Closed</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Assign Staff / Team:</label>
+                      <select name="assigned_team" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="Unassigned (Under Review)" {% if c['assigned_team'] == 'Unassigned (Under Review)' %}selected{% endif %}>Unassigned</option>
+                        <option value="Campus Electrical Squad (Er. Ramesh)" {% if c['assigned_team'] == 'Campus Electrical Squad (Er. Ramesh)' %}selected{% endif %}>Campus Electrical Squad</option>
+                        <option value="Plumbing & Water Maintenance (Suresh)" {% if c['assigned_team'] == 'Plumbing & Water Maintenance (Suresh)' %}selected{% endif %}>Plumbing Maintenance</option>
+                        <option value="Lab & IT Network Unit (Admin Tech)" {% if c['assigned_team'] == 'Lab & IT Network Unit (Admin Tech)' %}selected{% endif %}>Lab & IT Unit</option>
+                        <option value="Campus Sanitation & Civil Staff" {% if c['assigned_team'] == 'Campus Sanitation & Civil Staff' %}selected{% endif %}>Sanitation Staff</option>
+                        <option value="Proctorial Anti-Ragging Committee" {% if c['assigned_team'] == 'Proctorial Anti-Ragging Committee' %}selected{% endif %}>Anti-Ragging Committee</option>
+                        <option value="Internal Girls Safety Cell" {% if c['assigned_team'] == 'Internal Girls Safety Cell' %}selected{% endif %}>Girls Safety Cell</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Admin Note / ETA:</label>
+                      <input type="text" name="admin_notes" value="{{ c['admin_notes'] if c['admin_notes'] else 'Dispatched for verification.' }}" placeholder="e.g. Dispatched to Lab 2, ETA 1hr" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+
                     <button type="submit" class="w-full py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded text-[10px] uppercase tracking-wider transition cursor-pointer">
-                      Update
+                      Save & Update Dispatch
                     </button>
                   </form>
                 </td>
+
                 <td class="p-4 align-top text-center no-print">
                   <form action="/delete-complaint" method="POST" onsubmit="return confirm('Permanently remove this record from database?');">
                     <input type="hidden" name="token_id" value="{{ c['token_id'] }}">

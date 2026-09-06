@@ -114,7 +114,7 @@
       <div class="p-6 border-b border-slate-700 flex flex-wrap items-center justify-between gap-4 no-print">
         <div>
           <h2 class="text-base font-black text-white">Active Incident & Maintenance Log</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Assign field staff, update progress notes, and dispatch technicians</p>
+          <p class="text-xs text-slate-400 mt-0.5">Assign department units, update progress notes, and dispatch technicians</p>
         </div>
       </div>
 
@@ -165,7 +165,7 @@
                   {% endif %}
                 </td>
                 
-                <!-- DISPATCH MANAGEMENT (TEAM + NOTES + STATUS) -->
+                <!-- DISPATCH MANAGEMENT (OFFICIAL TEAMS ONLY - NO PERSONAL NAMES) -->
                 <td class="p-4 align-top">
                   <div class="print-only text-xs">
                     <p><strong>Status:</strong> {{ c['status'] }}</p>
@@ -185,21 +185,21 @@
                     </div>
 
                     <div>
-                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Assign Staff / Team:</label>
+                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Assign Official Unit:</label>
                       <select name="assigned_team" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
-                        <option value="Unassigned (Under Review)" {% if c['assigned_team'] == 'Unassigned (Under Review)' %}selected{% endif %}>Unassigned</option>
-                        <option value="Campus Electrical Squad (Er. Ramesh)" {% if c['assigned_team'] == 'Campus Electrical Squad (Er. Ramesh)' %}selected{% endif %}>Campus Electrical Squad</option>
-                        <option value="Plumbing & Water Maintenance (Suresh)" {% if c['assigned_team'] == 'Plumbing & Water Maintenance (Suresh)' %}selected{% endif %}>Plumbing Maintenance</option>
-                        <option value="Lab & IT Network Unit (Admin Tech)" {% if c['assigned_team'] == 'Lab & IT Network Unit (Admin Tech)' %}selected{% endif %}>Lab & IT Unit</option>
-                        <option value="Campus Sanitation & Civil Staff" {% if c['assigned_team'] == 'Campus Sanitation & Civil Staff' %}selected{% endif %}>Sanitation Staff</option>
-                        <option value="Proctorial Anti-Ragging Committee" {% if c['assigned_team'] == 'Proctorial Anti-Ragging Committee' %}selected{% endif %}>Anti-Ragging Committee</option>
-                        <option value="Internal Girls Safety Cell" {% if c['assigned_team'] == 'Internal Girls Safety Cell' %}selected{% endif %}>Girls Safety Cell</option>
+                        <option value="Unassigned (Under Review)" {% if c['assigned_team'] == 'Unassigned (Under Review)' %}selected{% endif %}>Unassigned (Under Review)</option>
+                        <option value="Electrical Maintenance Wing" {% if c['assigned_team'] == 'Electrical Maintenance Wing' %}selected{% endif %}>Electrical Maintenance Wing</option>
+                        <option value="Water Supply & Sanitation Cell" {% if c['assigned_team'] == 'Water Supply & Sanitation Cell' %}selected{% endif %}>Water Supply & Sanitation Cell</option>
+                        <option value="IT Infrastructure & Network Desk" {% if c['assigned_team'] == 'IT Infrastructure & Network Desk' %}selected{% endif %}>IT Infrastructure & Network Desk</option>
+                        <option value="Civil Works & Estate Office" {% if c['assigned_team'] == 'Civil Works & Estate Office' %}selected{% endif %}>Civil Works & Estate Office</option>
+                        <option value="Proctorial Anti-Ragging Committee" {% if c['assigned_team'] == 'Proctorial Anti-Ragging Committee' %}selected{% endif %}>Proctorial Anti-Ragging Committee</option>
+                        <option value="Internal Women & Girls Safety Squad" {% if c['assigned_team'] == 'Internal Women & Girls Safety Squad' %}selected{% endif %}>Internal Women & Girls Safety Squad</option>
                       </select>
                     </div>
 
                     <div>
-                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Admin Note / ETA:</label>
-                      <input type="text" name="admin_notes" value="{{ c['admin_notes'] if c['admin_notes'] else 'Dispatched for verification.' }}" placeholder="e.g. Dispatched to Lab 2, ETA 1hr" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                      <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Official Resolution Note / ETA:</label>
+                      <input type="text" name="admin_notes" value="{{ c['admin_notes'] if c['admin_notes'] else 'Dispatched for verification.' }}" placeholder="e.g. Unit dispatched to site, verification under progress" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
                     </div>
 
                     <button type="submit" class="w-full py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded text-[10px] uppercase tracking-wider transition cursor-pointer">

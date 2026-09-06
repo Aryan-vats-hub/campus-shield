@@ -25,9 +25,9 @@
     </div>
   </header>
 
-  <!-- NAVBAR -->
+  <!-- NAVBAR (Admin box removed from here) -->
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3 shadow-sm">
-    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
       <a href="/" class="flex items-center gap-2 no-underline">
         <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-md">
           <i class="fa-solid fa-shield-halved"></i>
@@ -38,13 +38,13 @@
         </div>
       </a>
 
-      <div class="flex items-center gap-2">
-        <!-- STUDENT GMAIL LOGIN / STATUS -->
+      <!-- GMAIL LOGIN BUTTON -->
+      <div>
         {% if user_email %}
-        <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-lg text-xs font-semibold text-emerald-800">
+        <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-800">
           <i class="fa-brands fa-google text-emerald-600"></i>
           <span>{{ user_email }}</span>
-          <a href="/logout" class="text-rose-600 hover:text-rose-800 ml-1 font-bold no-underline"><i class="fa-solid fa-right-from-bracket"></i></a>
+          <a href="/logout" class="text-rose-600 hover:text-rose-800 ml-1 font-bold no-underline" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
         {% else %}
         <a href="/login/google" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 shadow-sm no-underline">
@@ -57,14 +57,6 @@
           <span>Login with Gmail</span>
         </a>
         {% endif %}
-
-        <!-- DIRECT ADMIN PASSCODE FORM -->
-        <form action="/admin-login-post" method="POST" class="flex items-center gap-1.5">
-          <input type="password" name="admin_key" placeholder="Enter Password" class="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 w-32 sm:w-36 font-mono text-center" required>
-          <button type="submit" class="bg-slate-900 hover:bg-black text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
-            <i class="fa-solid fa-lock"></i> Admin
-          </button>
-        </form>
       </div>
     </div>
   </nav>

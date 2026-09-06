@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 import sqlite3
 import random
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -13,6 +13,9 @@ DB_NAME = "campus_v2.db"
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Indian Standard Time (IST = UTC + 5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
 
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
@@ -41,7 +44,6 @@ def init_db():
         )
     ''')
     
-    # Check and add columns safely if upgrading from existing DB
     cursor.execute("PRAGMA table_info(complaints)")
     columns = [row[1] for row in cursor.fetchall()]
     if 'assigned_team' not in columns:
@@ -199,7 +201,9 @@ def submit_grievance_direct():
         location = request.form.get('location') or 'Not specified'
         priority = request.form.get('priority', 'Normal')
         description = request.form.get('description', '')
-        created_at = datetime.now().strftime('%d %b %Y, %I:%M %p')
+        
+        # Exact Indian Standard Time (IST)
+        created_at = datetime.now(IST).strftime('%d %b %Y, %I:%M %p')
         token_id = f"CF-{random.randint(100000, 999999)}"
 
         evidence_filename = 'None'

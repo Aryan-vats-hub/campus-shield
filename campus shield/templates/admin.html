@@ -114,7 +114,7 @@
       <div class="p-6 border-b border-slate-700 flex flex-wrap items-center justify-between gap-4 no-print">
         <div>
           <h2 class="text-base font-black text-white">Active Incident & Maintenance Log</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Assign department units, update progress notes, and dispatch technicians</p>
+          <p class="text-xs text-slate-400 mt-0.5">Assign department units, update progress notes, and dispatch official teams</p>
         </div>
       </div>
 
@@ -165,7 +165,6 @@
                   {% endif %}
                 </td>
                 
-                <!-- DISPATCH MANAGEMENT (OFFICIAL TEAMS ONLY - NO PERSONAL NAMES) -->
                 <td class="p-4 align-top">
                   <div class="print-only text-xs">
                     <p><strong>Status:</strong> {{ c['status'] }}</p>
@@ -179,7 +178,7 @@
                       <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Status:</label>
                       <select name="status" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
                         <option value="Under Review by Department" {% if c['status'] == 'Under Review by Department' %}selected{% endif %}>Under Review</option>
-                        <option value="Technician Dispatched / In Action" {% if c['status'] == 'Technician Dispatched / In Action' %}selected{% endif %}>In Action</option>
+                        <option value="Authority Dispatched / Action In Progress" {% if 'Action' in c['status'] or 'Dispatched' in c['status'] and 'Resolved' not in c['status'] %}selected{% endif %}>Authority Dispatched / In Progress</option>
                         <option value="Resolved & Closed" {% if c['status'] == 'Resolved & Closed' %}selected{% endif %}>Resolved & Closed</option>
                       </select>
                     </div>
@@ -199,7 +198,7 @@
 
                     <div>
                       <label class="text-[10px] font-bold text-slate-400 block mb-0.5">Official Resolution Note / ETA:</label>
-                      <input type="text" name="admin_notes" value="{{ c['admin_notes'] if c['admin_notes'] else 'Dispatched for verification.' }}" placeholder="e.g. Unit dispatched to site, verification under progress" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                      <input type="text" name="admin_notes" value="{{ c['admin_notes'] if c['admin_notes'] else 'Action unit assigned. Verification in progress.' }}" placeholder="e.g. Unit dispatched to site, verification under progress" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
                     </div>
 
                     <button type="submit" class="w-full py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded text-[10px] uppercase tracking-wider transition cursor-pointer">

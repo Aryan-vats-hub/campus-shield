@@ -162,7 +162,6 @@
           </div>
         </div>
 
-        <!-- DESCRIPTION & AI AUTO-DETECTOR -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Detailed Description *</label>
@@ -187,7 +186,7 @@
       </form>
     </section>
 
-    <!-- TICKET TRACKER WITH VISUAL TIMELINE STEPPER -->
+    <!-- TICKET TRACKER WITH TIMELINE & ASSIGNED CREW -->
     <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="mb-4">
         <h3 class="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -227,12 +226,11 @@
           </div>
         </div>
 
-        <!-- VISUAL PROGRESS TIMELINE (STEPPER) -->
+        <!-- VISUAL STEPPER -->
         <div class="py-2">
           <div class="flex items-center justify-between relative">
             <div class="absolute top-1/2 left-4 right-4 -translate-y-1/2 h-1 bg-slate-200 z-0"></div>
 
-            <!-- Step 1: Registered -->
             <div class="relative z-10 text-center flex-1">
               <div class="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold bg-emerald-500 text-white shadow">
                 <i class="fa-solid fa-check"></i>
@@ -240,22 +238,40 @@
               <p class="text-[11px] font-bold text-slate-800 mt-1">1. Registered</p>
             </div>
 
-            <!-- Step 2: Under Review / In Action -->
             {% set in_action = ('Action' in track_result['status'] or 'Resolved' in track_result['status'] or 'Closed' in track_result['status']) %}
             <div class="relative z-10 text-center flex-1">
               <div class="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold {% if in_action %}bg-indigo-600 text-white shadow{% else %}bg-amber-400 text-white animate-bounce{% endif %}">
                 <i class="fa-solid fa-wrench"></i>
               </div>
-              <p class="text-[11px] font-bold text-slate-800 mt-1">2. Dispatched / Review</p>
+              <p class="text-[11px] font-bold text-slate-800 mt-1">2. Team Dispatched</p>
             </div>
 
-            <!-- Step 3: Resolved -->
             {% set is_res = ('Resolved' in track_result['status'] or 'Closed' in track_result['status']) %}
             <div class="relative z-10 text-center flex-1">
               <div class="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold {% if is_res %}bg-emerald-600 text-white shadow{% else %}bg-slate-200 text-slate-400{% endif %}">
                 <i class="fa-solid fa-circle-check"></i>
               </div>
               <p class="text-[11px] font-bold {% if is_res %}text-emerald-700{% else %}text-slate-400{% endif %} mt-1">3. Resolved</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ASSIGNED RESOLUTION TEAM DETAILS -->
+        <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm space-y-2">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="text-xs font-black text-indigo-950 flex items-center gap-1.5">
+              <i class="fa-solid fa-helmet-safety text-amber-500"></i> Dispatch & Action Unit Details
+            </span>
+            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold">Live Assignment</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span class="text-slate-500 font-bold block text-[11px]">Assigned Authority / Crew:</span>
+              <p class="font-extrabold text-slate-800 mt-0.5">{{ track_result['assigned_team'] }}</p>
+            </div>
+            <div>
+              <span class="text-slate-500 font-bold block text-[11px]">Admin Resolution Note / ETA:</span>
+              <p class="font-semibold text-slate-700 mt-0.5 italic">"{{ track_result['admin_notes'] }}"</p>
             </div>
           </div>
         </div>
@@ -284,7 +300,6 @@
     <p>&copy; 2026 CampusFix & Shield. Automated Redressal & Safety Engine.</p>
   </footer>
 
-  <!-- SMART AI KEYWORD SCRIPT -->
   <script>
     const descInput = document.getElementById('descInput');
     const aiBadge = document.getElementById('aiBadge');

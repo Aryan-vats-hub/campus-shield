@@ -33,7 +33,6 @@ def init_db():
             created_at TEXT
         )
     ''')
-    # Backward compatibility: agar student_email column na ho toh add kar do
     try:
         cursor.execute("ALTER TABLE complaints ADD COLUMN student_email TEXT DEFAULT 'Not Logged In'")
     except sqlite3.OperationalError:
@@ -79,7 +78,6 @@ def home():
 # --- STUDENT GMAIL LOGIN SIMULATION ---
 @app.route('/login/google')
 def student_google_login():
-    # College Demo Google Login Simulation
     session['user_email'] = "student.demo@campus.edu"
     session['student_name'] = "Verified Student"
     return redirect(url_for('home'))
@@ -90,18 +88,25 @@ def student_logout():
     session.pop('student_name', None)
     return redirect(url_for('home'))
 
+# --- SEPARATE SECRET ADMIN LOGIN PAGE ---
+@app.route('/admin')
+def admin_login_page():
+    if session.get('is_admin'):
+        return redirect(url_for('admin_panel'))
+    return render_template('admin_login.html')
+
 @app.route('/admin-login-post', methods=['POST'])
 def admin_login_post():
     key = request.form.get('admin_key', '').strip()
     if key == ADMIN_SECRET_KEY:
         session['is_admin'] = True
         return redirect(url_for('admin_panel'))
-    return "<script>alert('Invalid Passcode!'); window.location.href='/';</script>"
+    return "<script>alert('Invalid Passcode!'); window.location.href='/admin';</script>"
 
 @app.route('/admin-panel')
 def admin_panel():
     if not session.get('is_admin'):
-        return redirect(url_for('home'))
+        return redirect(url_for('admin_login_page'))
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM complaints ORDER BY id DESC")
@@ -139,7 +144,7 @@ def update_status():
         return jsonify({'status': 'success', 'message': 'Status updated'})
     return redirect(url_for('admin_panel'))
 
-# --- DELETE COMPLAINT (FOR ADMIN & STUDENT) ---
+# --- DELETE COMPLAINT ---
 @app.route('/delete-complaint', methods=['POST'])
 def delete_complaint():
     token_id = request.form.get('token_id')
@@ -156,6 +161,7 @@ def delete_complaint():
         return redirect(url_for('admin_panel'))
     return redirect(url_for('home'))
 
+# --- SUBMIT GRIEVANCE ---
 @app.route('/submit-grievance', methods=['POST'])
 def submit_grievance_direct():
     try:
@@ -190,14 +196,6 @@ def submit_grievance_direct():
     except Exception as e:
         return f"Submission Error: {str(e)}"
 
-@app.route('/api/verify-admin', methods=['POST'])
-def verify_admin():
-    data = request.get_json(silent=True) or request.form or {}
-    key = str(data.get('key', '')).strip()
-    if key == ADMIN_SECRET_KEY:
-        session['is_admin'] = True
-        return jsonify({'status': 'success', 'redirect': '/admin-panel'})
-    return jsonify({'status': 'error', 'message': 'Invalid Passcode'}), 401
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+L

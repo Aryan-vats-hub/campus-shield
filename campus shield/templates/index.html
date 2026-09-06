@@ -154,7 +154,7 @@
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Priority Level *</label>
-            <select name="priority" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+            <select id="prioritySelect" name="priority" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
               <option value="Normal">Normal Maintenance</option>
               <option value="High Priority (Urgent Repair)">High Priority (Urgent Repair)</option>
               <option value="Critical Immediate Attention">Critical Immediate Attention</option>
@@ -162,12 +162,17 @@
           </div>
         </div>
 
+        <!-- DESCRIPTION & AI AUTO-DETECTOR -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Detailed Description *</label>
-          <textarea name="description" rows="3" placeholder="Detail the breakdown or incident clearly..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required></textarea>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Detailed Description *</label>
+            <span id="aiBadge" class="hidden text-[11px] font-extrabold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md border border-rose-200 animate-pulse">
+              <i class="fa-solid fa-bolt-lightning text-rose-600 mr-1"></i> Smart AI: Emergency Detected (Auto-Escalated)
+            </span>
+          </div>
+          <textarea id="descInput" name="description" rows="3" placeholder="Detail the breakdown or incident clearly (e.g. wire spark, broken bench, ragging)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required></textarea>
         </div>
 
-        <!-- NEW: PHOTO / EVIDENCE ATTACHMENT -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
             <i class="fa-solid fa-camera mr-1 text-indigo-600"></i> Attach Evidence / Photo (Optional)
@@ -182,7 +187,7 @@
       </form>
     </section>
 
-    <!-- TICKET TRACKER -->
+    <!-- TICKET TRACKER WITH VISUAL TIMELINE STEPPER -->
     <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
       <div class="mb-4">
         <h3 class="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -199,11 +204,11 @@
       </form>
 
       {% if track_result %}
-      <div class="mt-6 p-5 rounded-xl border-2 border-indigo-100 bg-indigo-50/40">
-        <div class="flex flex-wrap items-center justify-between border-b border-indigo-100 pb-3 mb-4">
+      <div class="mt-6 p-5 rounded-2xl border-2 border-indigo-100 bg-indigo-50/40 space-y-5">
+        <div class="flex flex-wrap items-center justify-between border-b border-indigo-100 pb-3">
           <div>
             <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Token ID</span>
-            <p class="font-mono font-black text-indigo-900 text-base">{{ track_result['token_id'] }}</p>
+            <p class="font-mono font-black text-indigo-900 text-lg">{{ track_result['token_id'] }}</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-600 text-white shadow-sm">
@@ -221,7 +226,41 @@
             {% endif %}
           </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+
+        <!-- VISUAL PROGRESS TIMELINE (STEPPER) -->
+        <div class="py-2">
+          <div class="flex items-center justify-between relative">
+            <div class="absolute top-1/2 left-4 right-4 -translate-y-1/2 h-1 bg-slate-200 z-0"></div>
+
+            <!-- Step 1: Registered -->
+            <div class="relative z-10 text-center flex-1">
+              <div class="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold bg-emerald-500 text-white shadow">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <p class="text-[11px] font-bold text-slate-800 mt-1">1. Registered</p>
+            </div>
+
+            <!-- Step 2: Under Review / In Action -->
+            {% set in_action = ('Action' in track_result['status'] or 'Resolved' in track_result['status'] or 'Closed' in track_result['status']) %}
+            <div class="relative z-10 text-center flex-1">
+              <div class="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold {% if in_action %}bg-indigo-600 text-white shadow{% else %}bg-amber-400 text-white animate-bounce{% endif %}">
+                <i class="fa-solid fa-wrench"></i>
+              </div>
+              <p class="text-[11px] font-bold text-slate-800 mt-1">2. Dispatched / Review</p>
+            </div>
+
+            <!-- Step 3: Resolved -->
+            {% set is_res = ('Resolved' in track_result['status'] or 'Closed' in track_result['status']) %}
+            <div class="relative z-10 text-center flex-1">
+              <div class="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold {% if is_res %}bg-emerald-600 text-white shadow{% else %}bg-slate-200 text-slate-400{% endif %}">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <p class="text-[11px] font-bold {% if is_res %}text-emerald-700{% else %}text-slate-400{% endif %} mt-1">3. Resolved</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-white/70 p-3 rounded-xl border border-indigo-100">
           <div>
             <span class="text-slate-500 font-bold">Category:</span>
             <p class="font-bold text-slate-800 mt-0.5">{{ track_result['category'] }}</p>
@@ -244,6 +283,29 @@
   <footer class="bg-slate-950 text-slate-400 py-6 text-center text-xs">
     <p>&copy; 2026 CampusFix & Shield. Automated Redressal & Safety Engine.</p>
   </footer>
+
+  <!-- SMART AI KEYWORD SCRIPT -->
+  <script>
+    const descInput = document.getElementById('descInput');
+    const aiBadge = document.getElementById('aiBadge');
+    const prioritySelect = document.getElementById('prioritySelect');
+
+    const dangerKeywords = ['fire', 'spark', 'shock', 'ragging', 'harass', 'bleeding', 'fight', 'emergency', 'danger', 'attack', 'smoke', 'short circuit'];
+
+    descInput.addEventListener('input', function() {
+      const text = descInput.value.toLowerCase();
+      const detected = dangerKeywords.some(keyword => text.includes(keyword));
+
+      if (detected) {
+        aiBadge.classList.remove('hidden');
+        prioritySelect.value = 'Critical Immediate Attention';
+        prioritySelect.classList.add('bg-rose-50', 'border-rose-400', 'text-rose-900');
+      } else {
+        aiBadge.classList.add('hidden');
+        prioritySelect.classList.remove('bg-rose-50', 'border-rose-400', 'text-rose-900');
+      }
+    });
+  </script>
 
 </body>
 </html>

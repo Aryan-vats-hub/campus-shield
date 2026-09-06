@@ -1,13 +1,18 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import sqlite3
 import random
+import os
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "CAMPUS_SHIELD_SECRET_KEY_2026"
 
 ADMIN_SECRET_KEY = "ADMIN@2026"
 DB_NAME = "campus_v2.db"
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
@@ -88,7 +93,7 @@ def student_logout():
     session.pop('student_name', None)
     return redirect(url_for('home'))
 
-# --- SEPARATE SECRET ADMIN LOGIN PAGE ---
+# --- SEPARATE ADMIN LOGIN PAGE ---
 @app.route('/admin')
 def admin_login_page():
     if session.get('is_admin'):
@@ -121,7 +126,7 @@ def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('home'))
 
-# --- STATUS UPDATE ---
+# --- UPDATE STATUS ---
 @app.route('/update-status', methods=['POST'])
 @app.route('/api/update-status', methods=['POST'])
 @app.route('/update_status', methods=['POST'])
@@ -161,7 +166,7 @@ def delete_complaint():
         return redirect(url_for('admin_panel'))
     return redirect(url_for('home'))
 
-# --- SUBMIT GRIEVANCE ---
+# --- SUBMIT GRIEVANCE WITH PHOTO ATTACHMENT ---
 @app.route('/submit-grievance', methods=['POST'])
 def submit_grievance_direct():
     try:
@@ -183,12 +188,20 @@ def submit_grievance_direct():
         created_at = datetime.now().strftime('%d %b %Y, %I:%M %p')
         token_id = f"CF-{random.randint(100000, 999999)}"
 
+        evidence_filename = 'None'
+        if 'evidence' in request.files:
+            file = request.files['evidence']
+            if file and file.filename != '':
+                filename = secure_filename(f"{token_id}_{file.filename}")
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                evidence_filename = filename
+
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO complaints (token_id, category, student_name, roll_number, student_email, location, priority, description, evidence_file, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'None', 'Under Review by Department', ?)
-        ''', (token_id, category, student_name, roll_number, student_email, location, priority, description, created_at))
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Under Review by Department', ?)
+        ''', (token_id, category, student_name, roll_number, student_email, location, priority, description, evidence_filename, created_at))
         conn.commit()
         conn.close()
 
@@ -198,4 +211,3 @@ def submit_grievance_direct():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
